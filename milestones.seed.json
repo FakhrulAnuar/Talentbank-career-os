@@ -1,0 +1,37 @@
+{
+  "_meta": {
+    "purpose": "Static roadmap template that hydrates the Ascent Path spine. On signup, rows matching the user's path_type are copied into user_progress. The first PREVIEW_SEED_COUNT get status='preview' so a new path is never empty.",
+    "status": "DESIGN ARTIFACT — not wired to code yet",
+    "preview_seed_count": 3,
+    "phases_highschool": ["Foundations", "Skill Building", "Portfolio & CV", "Applications", "Summit"],
+    "phases_university": ["Foundations", "Skill Building", "Portfolio & CV", "Experience", "Applications", "Summit"],
+    "score_note": "Pathway Score = SUM(points_awarded) once a milestone is completed. Points below are the award-on-completion values."
+  },
+
+  "highschool": [
+    { "order_index": 1,  "phase": "Foundations",    "key": "hs_profile",        "title": "Set your profile & interests",     "points": 40,  "kind": "onboarding" },
+    { "order_index": 2,  "phase": "Foundations",    "key": "hs_goal",           "title": "Choose a target field",            "points": 40,  "kind": "goal" },
+    { "order_index": 3,  "phase": "Skill Building", "key": "hs_mod_core",       "title": "Complete a core skill module",     "points": 120, "kind": "module" },
+    { "order_index": 4,  "phase": "Skill Building", "key": "hs_mod_elective",   "title": "Complete an elective module",      "points": 100, "kind": "module" },
+    { "order_index": 5,  "phase": "Portfolio & CV", "key": "hs_first_cert",     "title": "Earn your first certificate",      "points": 100, "kind": "certificate" },
+    { "order_index": 6,  "phase": "Portfolio & CV", "key": "hs_project",        "title": "Add a project to your CV",         "points": 100, "kind": "cv" },
+    { "order_index": 7,  "phase": "Portfolio & CV", "key": "hs_resume",         "title": "Generate your resume",             "points": 80,  "kind": "resume" },
+    { "order_index": 8,  "phase": "Applications",   "key": "hs_shortlist",      "title": "Shortlist target universities",    "points": 80,  "kind": "recommendation" },
+    { "order_index": 9,  "phase": "Applications",   "key": "hs_app_ready",      "title": "Complete an application checklist","points": 120, "kind": "milestone" },
+    { "order_index": 10, "phase": "Summit",         "key": "hs_summit",         "title": "University recommendations",       "points": 0,   "kind": "summit" }
+  ],
+
+  "university": [
+    { "order_index": 1,  "phase": "Foundations",    "key": "uni_profile",       "title": "Set your profile & major",         "points": 40,  "kind": "onboarding" },
+    { "order_index": 2,  "phase": "Foundations",    "key": "uni_goal",          "title": "Choose a target role/industry",    "points": 40,  "kind": "goal" },
+    { "order_index": 3,  "phase": "Skill Building", "key": "uni_mod_core",      "title": "Complete a core skill module",     "points": 120, "kind": "module" },
+    { "order_index": 4,  "phase": "Skill Building", "key": "uni_cert",          "title": "Earn an industry certificate",     "points": 140, "kind": "certificate" },
+    { "order_index": 5,  "phase": "Portfolio & CV", "key": "uni_portfolio",     "title": "Build a project portfolio",        "points": 120, "kind": "cv" },
+    { "order_index": 6,  "phase": "Portfolio & CV", "key": "uni_resume",        "title": "Generate your CV",                 "points": 80,  "kind": "resume" },
+    { "order_index": 7,  "phase": "Experience",     "key": "uni_internship",    "title": "Log an internship or experience",  "points": 160, "kind": "experience" },
+    { "order_index": 8,  "phase": "Experience",     "key": "uni_networking",    "title": "Complete a networking action",     "points": 80,  "kind": "milestone" },
+    { "order_index": 9,  "phase": "Applications",   "key": "uni_shortlist",     "title": "Shortlist target companies",       "points": 80,  "kind": "recommendation" },
+    { "order_index": 10, "phase": "Applications",   "key": "uni_app_ready",     "title": "Tailor an application",            "points": 120, "kind": "milestone" },
+    { "order_index": 11, "phase": "Summit",         "key": "uni_summit",        "title": "Company recommendations",          "points": 0,   "kind": "summit" }
+  ]
+}
