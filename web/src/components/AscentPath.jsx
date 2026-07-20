@@ -60,7 +60,7 @@ export default function AscentPath({ journey, onOpenVault, onComplete, onGoProfi
             <div className="node right" style={{ minHeight: 150 }}>
               <div className="orb-wrap">
                 <div className="orb" />
-                <div className="coach">You’re here — finish this step to climb ✦</div>
+                <div className="coach">You’re here - finish this step to climb ✦</div>
               </div>
             </div>
           )}
@@ -76,7 +76,7 @@ export default function AscentPath({ journey, onOpenVault, onComplete, onGoProfi
                     <small>{r.score}% path match</small>
                   </div>
                 ))}
-                {recommendations.length === 0 && <p className="summit-empty">Keep climbing — matches unlock as you progress.</p>}
+                {recommendations.length === 0 && <p className="summit-empty">Keep climbing - matches unlock as you progress.</p>}
               </div>
             </div>
           ) : (

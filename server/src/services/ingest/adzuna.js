@@ -1,0 +1,62 @@
+// Roadmap step 2 - job-market demand from the Adzuna API (free tier). For each field it sums
+// demand across ALL configured countries and stores one snapshot (total count + top merged
+// categories) into job_signals; the recommender reads it (never called live).
+import { config } from '../../config.js';
+import { db } from '../../db/client.js';
+import { jobSignals } from '../../db/schema.js';
+
+export const DEFAULT_FIELDS = ['Computer Science', 'Data Science', 'Engineering', 'Business', 'Semiconductor'];
+
+// Pure parser for one country's response (unit-testable).
+export function parseAdzuna(data) {
+  const count = data?.count || 0;
+  const cats = {};
+  for (const r of data?.results || []) {
+    const label = r?.category?.label;
+    if (label) cats[label] = (cats[label] || 0) + 1;
+  }
+  return { count, cats };
+}
+
+// Merge several countries' parsed results into one field-level snapshot.
+export function mergeCountrySnapshots(snapshots) {
+  let count = 0;
+  const cats = {};
+  for (const s of snapshots) {
+    count += s.count || 0;
+    for (const [k, v] of Object.entries(s.cats || {})) cats[k] = (cats[k] || 0) + v;
+  }
+  const topSkills = Object.entries(cats).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k]) => k);
+  return { count, topSkills };
+}
+
+async function fetchAdzuna(country, field) {
+  const { appId, appKey } = config.adzuna;
+  const url = `https://api.adzuna.com/v1/api/jobs/${country}/search/1?app_id=${appId}&app_key=${appKey}`
+    + `&what=${encodeURIComponent(field)}&results_per_page=20&content-type=application/json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Adzuna API ${res.status}`);
+  return parseAdzuna(await res.json());
+}
+
+export async function ingestAdzunaDemand(fields = DEFAULT_FIELDS) {
+  const { appId, appKey, countries } = config.adzuna;
+  if (!appId || !appKey) return { skipped: true, reason: 'ADZUNA_APP_ID/KEY not set', updated: 0, countries };
+  let updated = 0;
+  const now = Date.now();
+  for (const field of fields) {
+    const snapshots = [];
+    for (const country of countries) {
+      try { snapshots.push(await fetchAdzuna(country, field)); }
+      catch (e) { console.warn('[ingest:adzuna]', country, field, e.message); }
+    }
+    if (snapshots.length === 0) continue;
+    const { count, topSkills } = mergeCountrySnapshots(snapshots);
+    db.insert(jobSignals)
+      .values({ field, count, topSkills: JSON.stringify(topSkills), updatedAt: now })
+      .onConflictDoUpdate({ target: jobSignals.field, set: { count, topSkills: JSON.stringify(topSkills), updatedAt: now } })
+      .run();
+    updated++;
+  }
+  return { skipped: false, updated, countries };
+}

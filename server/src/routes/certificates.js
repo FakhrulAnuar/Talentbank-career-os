@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
 import { requireAuth } from '../middleware/requireAuth.js';
-import { listCertificates, addCertificate, getCertificateFile, deleteCertificate } from '../services/certificateService.js';
+import { listCertificates, addCertificate, getCertificateFile, deleteCertificate, verifyCertificate } from '../services/certificateService.js';
 
 export const certificatesRouter = Router();
 
@@ -15,12 +15,12 @@ const upload = multer({
   },
 });
 
-// GET /api/certificates — the user's vault.
+// GET /api/certificates - the user's vault.
 certificatesRouter.get('/certificates', requireAuth, (req, res) => {
   res.json({ certificates: listCertificates(req.user.id) });
 });
 
-// POST /api/certificates — add a credential (optional file). Row committed only on success.
+// POST /api/certificates - add a credential (optional file). Row committed only on success.
 certificatesRouter.post('/certificates', requireAuth, (req, res) => {
   upload.single('file')(req, res, (uploadErr) => {
     if (uploadErr) {
@@ -37,7 +37,7 @@ certificatesRouter.post('/certificates', requireAuth, (req, res) => {
   });
 });
 
-// GET /api/certificates/:id/file — download the stored file (owner only).
+// GET /api/certificates/:id/file - download the stored file (owner only).
 certificatesRouter.get('/certificates/:id/file', requireAuth, (req, res) => {
   try {
     const { path, downloadName } = getCertificateFile(req.user.id, req.params.id);
@@ -54,5 +54,15 @@ certificatesRouter.delete('/certificates/:id', requireAuth, (req, res) => {
     res.json({ certificates: listCertificates(req.user.id) });
   } catch (err) {
     res.status(err.status || 500).json({ error: err.message || 'Could not delete certificate.' });
+  }
+});
+
+// POST /api/certificates/:id/verify  { url }  - verify via an Open Badge assertion URL.
+certificatesRouter.post('/certificates/:id/verify', requireAuth, async (req, res) => {
+  try {
+    const certificate = await verifyCertificate(req.user.id, req.params.id, req.body?.url);
+    res.json({ certificate, certificates: listCertificates(req.user.id) });
+  } catch (err) {
+    res.status(err.status || 500).json({ error: err.message || 'Could not verify certificate.' });
   }
 });

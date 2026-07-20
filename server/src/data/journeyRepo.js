@@ -48,7 +48,7 @@ export const journeyRepo = {
       .where(eq(certificates.userId, userId))
       .all();
 
-    // Derived score — never stored, can't drift. Milestones + modules + certificate bonus.
+    // Derived score - never stored, can't drift. Milestones + modules + certificate bonus.
     const milestonePoints = path.reduce((sum, m) => sum + (m.status === 'completed' ? m.pointsAwarded : 0), 0);
     const score = milestonePoints + completedModulePoints(userId) + certs.length * POINTS_PER_CERTIFICATE;
 

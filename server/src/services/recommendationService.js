@@ -1,12 +1,13 @@
 // Target recommendations for the Summit. High-school users get universities; university
-// users get companies. Each target (now from the DB catalog) is scored by how well its tags
-// overlap the signals from the user's ASCEND activity (profile target field + interests,
-// completed modules, certificates), with human-readable reasons + a source link.
+// users get companies. Scored by tag overlap with the user's ASCEND activity (profile field
+// + interests, completed modules, certificates), plus a job-market demand signal from the
+// cached Adzuna snapshot (job_signals) for company targets.
 import { eq, and } from 'drizzle-orm';
 import { db } from '../db/client.js';
-import { modules, userModules, certificates } from '../db/schema.js';
+import { modules, userModules, certificates, jobSignals } from '../db/schema.js';
 import { getProfile } from './profileService.js';
 import { listTargets } from './targetService.js';
+import { geminiEnabled } from './geminiService.js';
 
 const words = (s) => (s || '').toLowerCase().match(/[a-z]+/g)?.filter((w) => w.length >= 3) || [];
 
@@ -21,7 +22,15 @@ function userSignals(userId) {
   return { skills, certs, interests: profile.interests || [], targetField: profile.targetField || '' };
 }
 
-function scoreTarget(target, signals) {
+// Cached job-market demand (from the scheduled Adzuna ingestion). Empty until ingestion runs.
+function demandFor(target) {
+  const rows = db.select().from(jobSignals).all();
+  const tw = new Set(words(target.field));
+  const hit = rows.find((r) => words(r.field).some((w) => tw.has(w)));
+  return hit && hit.count > 0 ? hit : null;
+}
+
+function scoreTarget(target, signals, demand) {
   const tagList = (target.tags || []).map((t) => t.toLowerCase());
   const reasons = [];
   const matched = new Set();
@@ -50,10 +59,11 @@ function scoreTarget(target, signals) {
 
   const distinct = matched.size;
   let score = 55 + distinct * 12 + (certMatched ? 6 : 0) + (profileMatched ? 6 : 0);
+  if (demand) { score += 4; reasons.push(`High current demand - ${demand.count.toLocaleString()} live job postings (Adzuna)`); }
   score = Math.max(50, Math.min(99, score));
 
   const finalReasons = reasons.slice(0, 3);
-  if (finalReasons.length === 0) finalReasons.push('A solid starting fit — set your profile and complete modules to sharpen this match');
+  if (finalReasons.length === 0) finalReasons.push('A solid starting fit - set your profile and complete modules to sharpen this match');
 
   return { score, reasons: finalReasons };
 }
@@ -64,14 +74,30 @@ export function getRecommendations(userId, pathType) {
   const signals = userSignals(userId);
 
   const items = list.map((t, i) => {
-    const { score, reasons } = scoreTarget(t, signals);
+    const demand = type === 'company' ? demandFor(t) : null;
+    const { score, reasons } = scoreTarget(t, signals, demand);
     return {
-      id: i + 1, name: t.name, field: t.field, location: t.location, blurb: t.blurb,
+      id: i + 1, key: t.key, name: t.name, field: t.field, location: t.location, blurb: t.blurb,
       score, reasons, sourceUrl: t.sourceUrl, lastVerified: t.lastVerified,
     };
   }).sort((a, b) => b.score - a.score || a.id - b.id);
 
-  return { type, items };
+  // aiExplain tells the client whether to offer the optional "Explain this match" button.
+  return { type, items, aiExplain: geminiEnabled() };
+}
+
+/**
+ * Recompute the match for a single target by key (for the on-demand AI explanation).
+ * Returns { target, signals, score, reasons } or null if the key isn't on the user's path.
+ */
+export function matchForTarget(userId, pathType, key) {
+  const type = pathType === 'university' ? 'company' : 'university';
+  const target = listTargets(type).find((t) => t.key === key);
+  if (!target) return null;
+  const signals = userSignals(userId);
+  const demand = type === 'company' ? demandFor(target) : null;
+  const { score, reasons } = scoreTarget(target, signals, demand);
+  return { target, signals, score, reasons };
 }
 
 export function topRecommendations(userId, pathType, n = 3) {

@@ -55,7 +55,7 @@ export default function ResumePage() {
     <div className="resume">
       <div className="lead no-print">
         <h2 className="display">Your resume, auto-built.</h2>
-        <p>ATS-friendly and single-column. Skills and certifications come from your ASCEND activity — edit anything, then export to PDF.</p>
+        <p>ATS-friendly and single-column. Skills and certifications come from your ASCEND activity - edit anything, then export to PDF.</p>
       </div>
 
       <div className="resume-toolbar no-print">

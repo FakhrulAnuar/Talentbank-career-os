@@ -1,5 +1,5 @@
 // Progress writes for the Ascent Path. Kept in one transaction so a completion and the
-// advance of the next step commit together — no partial state, no score drift.
+// advance of the next step commit together - no partial state, no score drift.
 import { eq, and, asc } from 'drizzle-orm';
 import { db } from '../db/client.js';
 import { milestones, userProgress } from '../db/schema.js';
@@ -10,14 +10,14 @@ function httpError(status, message) {
   return e;
 }
 
-// Milestone kinds that can't be completed by the generic "Complete this step" button —
+// Milestone kinds that can't be completed by the generic "Complete this step" button -
 // they require finishing a real action on their own page (e.g. saving the Profile).
 const GATED_KINDS = new Set(['onboarding']);
 
 /**
  * Complete the user's currently-active milestone (identified by key) and light the next
  * previewed step. Only an 'active' milestone can be completed. Gated milestones (e.g. the
- * profile step) can only be completed via their own action page — pass opts.viaAction:true
+ * profile step) can only be completed via their own action page - pass opts.viaAction:true
  * from that page's route. Returns nothing; the caller re-reads the journey for fresh state.
  */
 export function completeActiveMilestone(userId, pathType, key, opts = {}) {

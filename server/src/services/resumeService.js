@@ -25,7 +25,7 @@ function suggestionsFor(userId) {
     .where(eq(certificates.userId, userId))
     .orderBy(desc(certificates.issuedAt))
     .all()
-    .map((c) => `${c.title} — ${c.issuer}`);
+    .map((c) => `${c.title} - ${c.issuer}`);
 
   return { skills, certifications };
 }

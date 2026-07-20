@@ -3,7 +3,7 @@
 import { sqlite } from './client.js';
 
 // Add a column only if it doesn't already exist (poor-man's ALTER migration for SQLite,
-// which — unlike CREATE TABLE IF NOT EXISTS — has no idempotent ADD COLUMN).
+// which - unlike CREATE TABLE IF NOT EXISTS - has no idempotent ADD COLUMN).
 function ensureColumn(table, column, definition) {
   const cols = sqlite.prepare(`PRAGMA table_info(${table})`).all();
   if (!cols.some((c) => c.name === column)) {
@@ -60,7 +60,9 @@ export function ensureSchema() {
       provider TEXT,
       url TEXT,
       verified INTEGER NOT NULL DEFAULT 0,
-      last_verified TEXT
+      last_verified TEXT,
+      tags TEXT,
+      always_show INTEGER NOT NULL DEFAULT 0
     );
     CREATE TABLE IF NOT EXISTS user_modules (
       user_id INTEGER NOT NULL,
@@ -111,6 +113,39 @@ export function ensureSchema() {
       source_url TEXT,
       last_verified TEXT
     );
+    CREATE TABLE IF NOT EXISTS job_signals (
+      field TEXT PRIMARY KEY,
+      count INTEGER NOT NULL DEFAULT 0,
+      top_skills TEXT,
+      updated_at INTEGER NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS rec_explanations (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      target_key TEXT NOT NULL,
+      input_hash TEXT NOT NULL,
+      text TEXT NOT NULL,
+      created_at INTEGER NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_recexpl_lookup ON rec_explanations(user_id, target_key, input_hash);
+    CREATE TABLE IF NOT EXISTS events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      key TEXT NOT NULL UNIQUE,
+      path_type TEXT NOT NULL,
+      type TEXT NOT NULL,
+      title TEXT NOT NULL,
+      organizer TEXT,
+      date TEXT,
+      deadline TEXT,
+      location TEXT,
+      mode TEXT,
+      cost TEXT,
+      blurb TEXT,
+      url TEXT,
+      tags TEXT,
+      always_show INTEGER NOT NULL DEFAULT 0,
+      last_verified TEXT
+    );
   `);
 
   // Migrate existing module tables created before the real-catalog fields existed.
@@ -118,4 +153,8 @@ export function ensureSchema() {
   ensureColumn('modules', 'url', 'TEXT');
   ensureColumn('modules', 'verified', 'INTEGER NOT NULL DEFAULT 0');
   ensureColumn('modules', 'last_verified', 'TEXT');
+  ensureColumn('modules', 'tags', 'TEXT');
+  ensureColumn('modules', 'always_show', 'INTEGER NOT NULL DEFAULT 0');
+  ensureColumn('certificates', 'verified', 'INTEGER NOT NULL DEFAULT 0');
+  ensureColumn('certificates', 'verify_source', 'TEXT');
 }

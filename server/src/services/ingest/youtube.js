@@ -1,0 +1,63 @@
+// Roadmap step 2 - course ingestion from the YouTube Data API v3 (free, 10k units/day).
+// Fetches real learning videos and upserts them into the modules catalog. No-op without a key.
+import { config } from '../../config.js';
+import { db } from '../../db/client.js';
+import { modules } from '../../db/schema.js';
+
+// What to pull. Edit freely - each query becomes a few real course modules.
+export const DEFAULT_QUERIES = [
+  { query: 'data literacy for beginners', pathType: 'both', phase: 'Core Skills', points: 100, max: 2, cvTip: "Add 'Data Literacy' to your skills." },
+  { query: 'public speaking tips', pathType: 'both', phase: 'Communication', points: 80, max: 2, cvTip: 'List a talk or presentation you gave.' },
+  { query: 'how to write a resume', pathType: 'both', phase: 'Career Prep', points: 90, max: 2, cvTip: 'Rewrite one bullet with action + result.' },
+  { query: 'intro to programming', pathType: 'highschool', phase: 'Core Skills', points: 120, max: 2, cvTip: 'Link a small coding project.' },
+  { query: 'internship interview preparation', pathType: 'university', phase: 'Career Prep', points: 120, max: 2, cvTip: 'Tailor your CV summary to a target role.' },
+];
+
+const today = () => new Date().toISOString().slice(0, 10);
+
+// Pure parser (unit-testable without a live call).
+export function parseYouTubeSearch(data) {
+  return (data?.items || [])
+    .map((it) => ({
+      videoId: it?.id?.videoId,
+      title: it?.snippet?.title,
+      channel: it?.snippet?.channelTitle,
+      description: (it?.snippet?.description || '').slice(0, 300),
+    }))
+    .filter((v) => v.videoId && v.title);
+}
+
+async function searchYouTube(query, max) {
+  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=${max}`
+    + `&q=${encodeURIComponent(query)}&key=${config.youtubeApiKey}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`YouTube API ${res.status}`);
+  return parseYouTubeSearch(await res.json());
+}
+
+export async function ingestYouTubeCourses(queries = DEFAULT_QUERIES) {
+  if (!config.youtubeApiKey) return { skipped: true, reason: 'YOUTUBE_API_KEY not set', inserted: 0 };
+  let inserted = 0;
+  for (const q of queries) {
+    let vids = [];
+    try { vids = await searchYouTube(q.query, q.max || 2); }
+    catch (e) { console.warn('[ingest:youtube]', q.query, e.message); continue; }
+    for (const v of vids) {
+      const row = {
+        key: `yt_${v.videoId}`, pathType: q.pathType, title: v.title, phase: q.phase,
+        description: v.description || `${v.channel} - via YouTube`, cvTip: q.cvTip ?? null,
+        minutes: 0, points: q.points ?? 60, provider: `YouTube · ${v.channel}`,
+        url: `https://www.youtube.com/watch?v=${v.videoId}`, verified: 0, lastVerified: today(),
+      };
+      db.insert(modules).values(row).onConflictDoUpdate({
+        target: modules.key,
+        set: {
+          pathType: row.pathType, title: row.title, phase: row.phase, description: row.description,
+          cvTip: row.cvTip, points: row.points, provider: row.provider, url: row.url, lastVerified: row.lastVerified,
+        },
+      }).run();
+      inserted++;
+    }
+  }
+  return { skipped: false, inserted };
+}

@@ -1,0 +1,135 @@
+// Drizzle schema — mirrors DESIGN_BLUEPRINT.md.
+// Pathway Score is DERIVED (SUM of completed points), never stored as a column.
+import { sqliteTable, text, integer, primaryKey } from 'drizzle-orm/sqlite-core';
+
+export const users = sqliteTable('users', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  displayName: text('display_name').notNull(),
+  email: text('email').notNull().unique(),
+  passwordHash: text('password_hash').notNull(),
+  pathType: text('path_type').notNull(), // 'highschool' | 'university' — editable later, not immutable
+  createdAt: integer('created_at').notNull().default(0),
+});
+
+// Server-side sessions. Cookie holds the opaque id; nothing sensitive lives client-side.
+export const sessions = sqliteTable('sessions', {
+  id: text('id').primaryKey(), // random token
+  userId: integer('user_id').notNull().references(() => users.id),
+  createdAt: integer('created_at').notNull(),
+  expiresAt: integer('expires_at').notNull(),
+});
+
+// Static roadmap template. path_type scopes which rows belong to a journey.
+export const milestones = sqliteTable('milestones', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  key: text('key').notNull().unique(),
+  pathType: text('path_type').notNull(),
+  orderIndex: integer('order_index').notNull(),
+  phase: text('phase').notNull(),
+  title: text('title').notNull(),
+  kind: text('kind').notNull(),
+  points: integer('points').notNull().default(0),
+});
+
+// One row per user per milestone.
+export const userProgress = sqliteTable(
+  'user_progress',
+  {
+    userId: integer('user_id').notNull().references(() => users.id),
+    milestoneId: integer('milestone_id').notNull().references(() => milestones.id),
+    status: text('status').notNull().default('preview'), // preview | active | completed
+    pointsAwarded: integer('points_awarded').notNull().default(0),
+    completedAt: integer('completed_at'),
+  },
+  (t) => ({ pk: primaryKey({ columns: [t.userId, t.milestoneId] }) })
+);
+
+// Online module catalog (static) + per-user completion.
+export const modules = sqliteTable('modules', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  key: text('key').notNull().unique(),
+  pathType: text('path_type').notNull(), // 'highschool' | 'university' | 'both'
+  title: text('title').notNull(),
+  phase: text('phase').notNull(),
+  description: text('description').notNull(),
+  cvTip: text('cv_tip'),
+  minutes: integer('minutes').notNull().default(0),
+  points: integer('points').notNull().default(0),
+  provider: text('provider'),
+  url: text('url'),
+  verified: integer('verified').notNull().default(0),
+  lastVerified: text('last_verified'),
+  tags: text('tags'), // JSON array of lowercase category tags
+  alwaysShow: integer('always_show').notNull().default(0), // pin soft-skills for everyone
+});
+
+export const userModules = sqliteTable(
+  'user_modules',
+  {
+    userId: integer('user_id').notNull().references(() => users.id),
+    moduleId: integer('module_id').notNull().references(() => modules.id),
+    status: text('status').notNull().default('not_started'), // not_started | completed
+    completedAt: integer('completed_at'),
+  },
+  (t) => ({ pk: primaryKey({ columns: [t.userId, t.moduleId] }) })
+);
+
+export const certificates = sqliteTable('certificates', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id),
+  milestoneId: integer('milestone_id').references(() => milestones.id),
+  title: text('title').notNull(),
+  issuer: text('issuer').notNull(),
+  fileRef: text('file_ref'),
+  issuedAt: integer('issued_at'),
+  verified: integer('verified').notNull().default(0),
+  verifySource: text('verify_source'),
+});
+
+export const recommendations = sqliteTable('recommendations', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id),
+  type: text('type').notNull(), // 'university' | 'company'
+  label: text('label').notNull(),
+  score: integer('score').notNull().default(0),
+});
+
+// One resume document per user, stored as JSON for flexibility (ATS single-column layout).
+export const resumes = sqliteTable('resumes', {
+  userId: integer('user_id').primaryKey().references(() => users.id),
+  data: text('data').notNull(),
+  updatedAt: integer('updated_at').notNull(),
+});
+
+// One profile per user (target field + interests) — feeds recommendations & the resume.
+export const profiles = sqliteTable('profiles', {
+  userId: integer('user_id').primaryKey().references(() => users.id),
+  targetField: text('target_field'),
+  interests: text('interests'), // JSON array
+  bio: text('bio'),
+  location: text('location'),
+  updatedAt: integer('updated_at').notNull(),
+});
+
+// Target catalog (universities + companies) — curated real entries with a source link.
+export const targets = sqliteTable('targets', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  key: text('key').notNull().unique(),
+  type: text('type').notNull(), // 'university' | 'company'
+  name: text('name').notNull(),
+  field: text('field').notNull(),
+  location: text('location'),
+  blurb: text('blurb'),
+  tags: text('tags'), // JSON array of lowercase tags
+  sourceUrl: text('source_url'),
+  lastVerified: text('last_verified'),
+});
+
+// Live job-market demand per field (from Adzuna). Refreshed by a scheduled ingestion job,
+// read (never called live) by the recommendation engine to add a demand signal.
+export const jobSignals = sqliteTable('job_signals', {
+  field: text('field').primaryKey(),
+  count: integer('count').notNull().default(0),
+  topSkills: text('top_skills'), // JSON array
+  updatedAt: integer('updated_at').notNull(),
+});

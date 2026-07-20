@@ -1,6 +1,6 @@
 // File storage behind a small interface so the Certificate Vault never depends on where
 // bytes actually live. Local disk now; swap to a volume or blob store later by replacing
-// this module — callers (certificateService) don't change.
+// this module - callers (certificateService) don't change.
 import { randomUUID } from 'node:crypto';
 import { mkdirSync, writeFileSync, existsSync, rmSync } from 'node:fs';
 import { join, extname, basename } from 'node:path';
@@ -12,7 +12,7 @@ const ROOT = process.env.STORAGE_DIR || join(here, '..', '..', 'storage', 'certi
 mkdirSync(ROOT, { recursive: true });
 
 export const storage = {
-  // Save bytes, return an opaque ref (never a caller-supplied path — avoids traversal).
+  // Save bytes, return an opaque ref (never a caller-supplied path - avoids traversal).
   save(buffer, originalName) {
     const ext = extname(originalName || '').slice(0, 10);
     const ref = `${randomUUID()}${ext}`;

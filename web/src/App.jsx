@@ -8,13 +8,14 @@ import VaultPage from './components/VaultPage.jsx';
 import ResumePage from './components/ResumePage.jsx';
 import TargetsPage from './components/TargetsPage.jsx';
 import ProfilePage from './components/ProfilePage.jsx';
+import WorkshopsPage from './components/WorkshopsPage.jsx';
 
 export default function App() {
   const [authUser, setAuthUser] = useState(undefined); // undefined=loading, null=logged out
   const [journey, setJourney] = useState(null);
   const [error, setError] = useState(null);
   const [completingKey, setCompletingKey] = useState(null);
-  const [view, setView] = useState('path'); // 'profile' | 'path' | 'modules' | 'vault' | 'resume' | 'targets'
+  const [view, setView] = useState('path'); // 'profile' | 'path' | 'modules' | 'workshops' | 'vault' | 'resume' | 'targets'
 
   const loadJourney = useCallback(() => {
     setError(null);
@@ -76,7 +77,7 @@ export default function App() {
           <>
             <div className="lead">
               <h2 className="display">Your climb, one continuous path.</h2>
-              <p>Not a dashboard of boxes — a single journey from where you are up to your goal.</p>
+              <p>Not a dashboard of boxes - a single journey from where you are up to your goal.</p>
             </div>
             {error && <p className="path-error">{error}</p>}
             {journey ? (
@@ -93,6 +94,7 @@ export default function App() {
           </>
         )}
         {view === 'modules' && <ModulesPage user={authUser} onScoreChanged={loadJourney} />}
+        {view === 'workshops' && <WorkshopsPage user={authUser} onNavigate={setView} />}
         {view === 'vault' && <VaultPage onScoreChanged={loadJourney} />}
         {view === 'resume' && <ResumePage />}
         {view === 'targets' && <TargetsPage onNavigate={setView} />}

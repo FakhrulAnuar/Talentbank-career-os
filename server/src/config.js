@@ -5,6 +5,17 @@ const {
   DB_FILE = './ascend.db',
   NODE_ENV = 'development',
   SESSION_SECRET,
+  // --- external API keys (all optional; features no-op when a key is absent) ---
+  YOUTUBE_API_KEY = '',
+  ADZUNA_APP_ID = '',
+  ADZUNA_APP_KEY = '',
+  ADZUNA_COUNTRY = 'gb', // one or more, comma-separated: e.g. "sg,gb,us"
+  // run ingestion automatically every N minutes (0 = off; trigger manually instead)
+  INGEST_INTERVAL_MIN = '0',
+  // Gemini (Google AI) - powers the optional AI "why this fits you" explanation layer.
+  // Rules still decide ranking; Gemini only phrases the reasons. No-op without a key.
+  GEMINI_API_KEY = '',
+  GEMINI_MODEL = 'gemini-1.5-flash',
 } = process.env;
 
 const isProd = NODE_ENV === 'production';
@@ -14,8 +25,11 @@ let sessionSecret = SESSION_SECRET;
 if (!sessionSecret) {
   if (isProd) throw new Error('SESSION_SECRET is required in production.');
   sessionSecret = 'dev-insecure-secret-change-me';
-  console.warn('[config] SESSION_SECRET not set — using an insecure dev default.');
+  console.warn('[config] SESSION_SECRET not set - using an insecure dev default.');
 }
+
+// "sg, gb , us" -> ['sg','gb','us']
+const countries = ADZUNA_COUNTRY.split(',').map((c) => c.trim().toLowerCase()).filter(Boolean);
 
 export const config = {
   port: Number(PORT),
@@ -24,6 +38,11 @@ export const config = {
   sessionSecret,
   sessionTtlMs: 1000 * 60 * 60 * 24 * 7, // 7 days
   cookieName: 'ascend_sid',
+  // integrations
+  youtubeApiKey: YOUTUBE_API_KEY,
+  adzuna: { appId: ADZUNA_APP_ID, appKey: ADZUNA_APP_KEY, countries: countries.length ? countries : ['gb'] },
+  ingestIntervalMin: Number(INGEST_INTERVAL_MIN) || 0,
+  gemini: { apiKey: GEMINI_API_KEY, model: GEMINI_MODEL },
 };
 
 // Validate early so a bad env crashes at boot, not mid-request.

@@ -10,7 +10,7 @@ profileRouter.get('/profile', requireAuth, (req, res) => {
   res.json({ profile: getProfile(req.user.id) });
 });
 
-// PUT /api/profile — save, and satisfy the profile milestone if it's the active step.
+// PUT /api/profile - save, and satisfy the profile milestone if it's the active step.
 profileRouter.put('/profile', requireAuth, (req, res) => {
   try {
     const profile = saveProfile(req.user.id, req.body?.profile);
@@ -20,7 +20,7 @@ profileRouter.put('/profile', requireAuth, (req, res) => {
       try {
         completeActiveMilestone(req.user.id, req.user.pathType, key, { viaAction: true });
         milestoneCompleted = true;
-      } catch { /* not the active step — fine */ }
+      } catch { /* not the active step - fine */ }
     }
     res.json({ profile, milestoneCompleted });
   } catch (err) {

@@ -30,7 +30,7 @@ export const fetchCertificates = () => request('/api/certificates');
 export const deleteCertificate = (id) =>
   request(`/api/certificates/${id}`, { method: 'DELETE' });
 
-// Multipart upload — let the browser set the multipart boundary (no JSON header).
+// Multipart upload - let the browser set the multipart boundary (no JSON header).
 export async function uploadCertificate(formData) {
   const res = await fetch('/api/certificates', { method: 'POST', credentials: 'include', body: formData });
   const data = await res.json().catch(() => ({}));
@@ -49,3 +49,13 @@ export const fetchRecommendations = () => request('/api/recommendations');
 export const fetchProfile = () => request('/api/profile');
 export const saveProfile = (profile) =>
   request('/api/profile', { method: 'PUT', body: JSON.stringify({ profile }) });
+
+export const verifyCertificate = (id, url) =>
+  request(`/api/certificates/${id}/verify`, { method: 'POST', body: JSON.stringify({ url }) });
+
+export const runIngestion = () => request('/api/ingest/run', { method: 'POST' });
+
+export const fetchEvents = () => request('/api/events');
+
+export const explainMatch = (key) =>
+  request(`/api/recommendations/${encodeURIComponent(key)}/explain`, { method: 'POST' });

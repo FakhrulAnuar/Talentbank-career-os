@@ -16,6 +16,7 @@ export default function TopBar({ journey, user, view, onNavigate, onOpenVault, o
         <button className={view === 'profile' ? 'nav-on' : ''} onClick={() => onNavigate('profile')}>Profile</button>
         <button className={view === 'path' ? 'nav-on' : ''} onClick={() => onNavigate('path')}>Path</button>
         <button className={view === 'modules' ? 'nav-on' : ''} onClick={() => onNavigate('modules')}>Modules</button>
+        <button className={view === 'workshops' ? 'nav-on' : ''} onClick={() => onNavigate('workshops')}>Workshops</button>
         <button className={view === 'vault' ? 'nav-on' : ''} onClick={() => onNavigate('vault')}>Vault</button>
         <button className={view === 'resume' ? 'nav-on' : ''} onClick={() => onNavigate('resume')}>Resume</button>
         <button className={view === 'targets' ? 'nav-on' : ''} onClick={() => onNavigate('targets')}>Targets</button>
@@ -24,7 +25,7 @@ export default function TopBar({ journey, user, view, onNavigate, onOpenVault, o
       <div className="path-pill">{pathLabel}</div>
       <button className="score-badge" onClick={onOpenVault} title="Open Vault">
         <div>
-          <b>{journey ? journey.score : '—'}</b>
+          <b>{journey ? journey.score : '-'}</b>
           <small>PATHWAY SCORE</small>
         </div>
         <div className="miniorb" />

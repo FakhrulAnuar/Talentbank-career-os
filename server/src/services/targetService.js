@@ -1,5 +1,5 @@
 // Target catalog (universities + companies). Curated real entries loaded/refreshed from
-// targets.seed.json into the DB (upsert by key) — edit the JSON and restart to update.
+// targets.seed.json into the DB (upsert by key) - edit the JSON and restart to update.
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';

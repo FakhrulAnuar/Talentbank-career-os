@@ -17,7 +17,7 @@ function safeUser(u) {
   return { id: u.id, displayName: u.displayName, email: u.email, pathType: u.pathType };
 }
 
-// POST /api/auth/signup — creates the account, seeds the chosen path, starts a session.
+// POST /api/auth/signup - creates the account, seeds the chosen path, starts a session.
 authRouter.post('/signup', (req, res) => {
   const { email, password, pathType } = req.body ?? {};
   const displayName = (req.body?.displayName || '').trim() || String(email || '').split('@')[0];
@@ -67,7 +67,7 @@ authRouter.post('/logout', (req, res) => {
   res.json({ ok: true });
 });
 
-// GET /api/auth/me — current user, or 401 if not signed in.
+// GET /api/auth/me - current user, or 401 if not signed in.
 authRouter.get('/me', requireAuth, (req, res) => {
   res.json({ user: req.user });
 });

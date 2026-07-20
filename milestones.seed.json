@@ -1,7 +1,7 @@
 {
   "_meta": {
     "purpose": "Static roadmap template that hydrates the Ascent Path spine. On signup, rows matching the user's path_type are copied into user_progress. The first PREVIEW_SEED_COUNT get status='preview' so a new path is never empty.",
-    "status": "DESIGN ARTIFACT — not wired to code yet",
+    "status": "DESIGN ARTIFACT - not wired to code yet",
     "preview_seed_count": 3,
     "phases_highschool": ["Foundations", "Skill Building", "Portfolio & CV", "Applications", "Summit"],
     "phases_university": ["Foundations", "Skill Building", "Portfolio & CV", "Experience", "Applications", "Summit"],

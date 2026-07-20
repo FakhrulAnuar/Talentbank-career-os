@@ -1,4 +1,4 @@
-// Drizzle schema — mirrors DESIGN_BLUEPRINT.md.
+// Drizzle schema - mirrors DESIGN_BLUEPRINT.md.
 // Pathway Score is DERIVED (SUM of completed points), never stored as a column.
 import { sqliteTable, text, integer, primaryKey } from 'drizzle-orm/sqlite-core';
 
@@ -7,7 +7,7 @@ export const users = sqliteTable('users', {
   displayName: text('display_name').notNull(),
   email: text('email').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
-  pathType: text('path_type').notNull(), // 'highschool' | 'university' — editable later, not immutable
+  pathType: text('path_type').notNull(), // 'highschool' | 'university' - editable later, not immutable
   createdAt: integer('created_at').notNull().default(0),
 });
 
@@ -59,6 +59,8 @@ export const modules = sqliteTable('modules', {
   url: text('url'),
   verified: integer('verified').notNull().default(0),
   lastVerified: text('last_verified'),
+  tags: text('tags'), // JSON array of lowercase category tags
+  alwaysShow: integer('always_show').notNull().default(0), // pin soft-skills for everyone
 });
 
 export const userModules = sqliteTable(
@@ -80,6 +82,8 @@ export const certificates = sqliteTable('certificates', {
   issuer: text('issuer').notNull(),
   fileRef: text('file_ref'),
   issuedAt: integer('issued_at'),
+  verified: integer('verified').notNull().default(0),
+  verifySource: text('verify_source'),
 });
 
 export const recommendations = sqliteTable('recommendations', {
@@ -97,7 +101,7 @@ export const resumes = sqliteTable('resumes', {
   updatedAt: integer('updated_at').notNull(),
 });
 
-// One profile per user (target field + interests) — feeds recommendations & the resume.
+// One profile per user (target field + interests) - feeds recommendations & the resume.
 export const profiles = sqliteTable('profiles', {
   userId: integer('user_id').primaryKey().references(() => users.id),
   targetField: text('target_field'),
@@ -107,7 +111,7 @@ export const profiles = sqliteTable('profiles', {
   updatedAt: integer('updated_at').notNull(),
 });
 
-// Target catalog (universities + companies) — curated real entries with a source link.
+// Target catalog (universities + companies) - curated real entries with a source link.
 export const targets = sqliteTable('targets', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   key: text('key').notNull().unique(),
@@ -119,4 +123,46 @@ export const targets = sqliteTable('targets', {
   tags: text('tags'), // JSON array of lowercase tags
   sourceUrl: text('source_url'),
   lastVerified: text('last_verified'),
+});
+
+// Workshops / tournaments / competitions / career-fairs catalog (curated real entries).
+// Same pattern as targets: upserted from events.seed.json on boot, matched to the user's
+// profile by tag overlap. External "Register" links only - we never host the event.
+export const events = sqliteTable('events', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  key: text('key').notNull().unique(),
+  pathType: text('path_type').notNull(), // 'highschool' | 'university' | 'both'
+  type: text('type').notNull(),          // 'workshop' | 'hackathon' | 'competition' | 'fair'
+  title: text('title').notNull(),
+  organizer: text('organizer'),
+  date: text('date'),        // human-readable, may be "Annual - see site"
+  deadline: text('deadline'),
+  location: text('location'),
+  mode: text('mode'),        // 'online' | 'in-person' | 'hybrid'
+  cost: text('cost'),        // 'free' | 'paid'
+  blurb: text('blurb'),
+  url: text('url'),
+  tags: text('tags'),        // JSON array of lowercase tags
+  alwaysShow: integer('always_show').notNull().default(0), // pin broadly-useful events
+  lastVerified: text('last_verified'),
+});
+
+// Cached AI "why this fits you" explanations. Keyed by user + target + a hash of the inputs,
+// so we only call Gemini once per unique (user, target, signal-set) - never on every view.
+export const recExplanations = sqliteTable('rec_explanations', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id),
+  targetKey: text('target_key').notNull(),
+  inputHash: text('input_hash').notNull(), // sha256 of the anonymized signal payload
+  text: text('text').notNull(),
+  createdAt: integer('created_at').notNull(),
+});
+
+// Live job-market demand per field (from Adzuna). Refreshed by a scheduled ingestion job,
+// read (never called live) by the recommendation engine to add a demand signal.
+export const jobSignals = sqliteTable('job_signals', {
+  field: text('field').primaryKey(),
+  count: integer('count').notNull().default(0),
+  topSkills: text('top_skills'), // JSON array
+  updatedAt: integer('updated_at').notNull(),
 });

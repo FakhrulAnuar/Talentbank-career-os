@@ -41,7 +41,7 @@ export default function AuthFlow({ onAuthed }) {
       {step === 'fork' ? (
         <div className="fork">
           <h2 className="display">Where are you right now?</h2>
-          <p className="fork-sub">Pick your starting point — we’ll light the first steps of your path.</p>
+          <p className="fork-sub">Pick your starting point - we’ll light the first steps of your path.</p>
           <div className="fork-split">
             <button className="fork-panel hs" onClick={() => setPathType('highschool')}>
               <span className="fork-emoji">🎒</span>

@@ -1,0 +1,90 @@
+// Target recommendations for the Summit. High-school users get universities; university
+// users get companies. Scored by tag overlap with the user's ASCEND activity (profile field
+// + interests, completed modules, certificates), plus a job-market demand signal from the
+// cached Adzuna snapshot (job_signals) for company targets.
+import { eq, and } from 'drizzle-orm';
+import { db } from '../db/client.js';
+import { modules, userModules, certificates, jobSignals } from '../db/schema.js';
+import { getProfile } from './profileService.js';
+import { listTargets } from './targetService.js';
+
+const words = (s) => (s || '').toLowerCase().match(/[a-z]+/g)?.filter((w) => w.length >= 3) || [];
+
+function userSignals(userId) {
+  const skills = db.select({ title: modules.title })
+    .from(userModules).innerJoin(modules, eq(userModules.moduleId, modules.id))
+    .where(and(eq(userModules.userId, userId), eq(userModules.status, 'completed')))
+    .all().map((r) => r.title);
+  const certs = db.select({ title: certificates.title })
+    .from(certificates).where(eq(certificates.userId, userId)).all().map((r) => r.title);
+  const profile = getProfile(userId);
+  return { skills, certs, interests: profile.interests || [], targetField: profile.targetField || '' };
+}
+
+// Cached job-market demand (from the scheduled Adzuna ingestion). Empty until ingestion runs.
+function demandFor(target) {
+  const rows = db.select().from(jobSignals).all();
+  const tw = new Set(words(target.field));
+  const hit = rows.find((r) => words(r.field).some((w) => tw.has(w)));
+  return hit && hit.count > 0 ? hit : null;
+}
+
+function scoreTarget(target, signals, demand) {
+  const tagList = (target.tags || []).map((t) => t.toLowerCase());
+  const reasons = [];
+  const matched = new Set();
+  let certMatched = false;
+  let profileMatched = false;
+
+  const check = (title, kind) => {
+    const tw = words(title);
+    for (const tag of tagList) {
+      if (matched.has(tag)) continue;
+      const tagWords = tag.split(' ');
+      if (tagWords.some((x) => tw.includes(x)) || tw.some((sw) => tag.includes(sw))) {
+        matched.add(tag);
+        if (kind === 'cert') { certMatched = true; reasons.push(`Your "${title}" certificate fits ${target.field}`); }
+        else if (kind === 'interest') { profileMatched = true; reasons.push(`Matches your interest in ${title}`); }
+        else if (kind === 'field') { profileMatched = true; reasons.push(`Fits your target field: ${title}`); }
+        else reasons.push(`Your ${title} skill aligns with ${tag}`);
+      }
+    }
+  };
+
+  if (signals.targetField) check(signals.targetField, 'field');
+  signals.interests.forEach((i) => check(i, 'interest'));
+  signals.skills.forEach((s) => check(s, 'skill'));
+  signals.certs.forEach((c) => check(c, 'cert'));
+
+  const distinct = matched.size;
+  let score = 55 + distinct * 12 + (certMatched ? 6 : 0) + (profileMatched ? 6 : 0);
+  if (demand) { score += 4; reasons.push(`High current demand — ${demand.count.toLocaleString()} live job postings (Adzuna)`); }
+  score = Math.max(50, Math.min(99, score));
+
+  const finalReasons = reasons.slice(0, 3);
+  if (finalReasons.length === 0) finalReasons.push('A solid starting fit — set your profile and complete modules to sharpen this match');
+
+  return { score, reasons: finalReasons };
+}
+
+export function getRecommendations(userId, pathType) {
+  const type = pathType === 'university' ? 'company' : 'university';
+  const list = listTargets(type);
+  const signals = userSignals(userId);
+
+  const items = list.map((t, i) => {
+    const demand = type === 'company' ? demandFor(t) : null;
+    const { score, reasons } = scoreTarget(t, signals, demand);
+    return {
+      id: i + 1, name: t.name, field: t.field, location: t.location, blurb: t.blurb,
+      score, reasons, sourceUrl: t.sourceUrl, lastVerified: t.lastVerified,
+    };
+  }).sort((a, b) => b.score - a.score || a.id - b.id);
+
+  return { type, items };
+}
+
+export function topRecommendations(userId, pathType, n = 3) {
+  return getRecommendations(userId, pathType).items.slice(0, n)
+    .map((r) => ({ id: r.id, label: r.name, score: r.score }));
+}

@@ -1,0 +1,16 @@
+import { Router } from 'express';
+import { requireAuth } from '../middleware/requireAuth.js';
+import { runIngestion } from '../services/ingest/index.js';
+
+export const ingestRouter = Router();
+
+// POST /api/ingest/run - manually trigger step-2 ingestion (YouTube courses + Adzuna demand).
+// NOTE: guarded by login for now; add an admin-role check before exposing publicly.
+ingestRouter.post('/ingest/run', requireAuth, async (_req, res) => {
+  try {
+    const summary = await runIngestion();
+    res.json(summary);
+  } catch (err) {
+    res.status(500).json({ error: err.message || 'Ingestion failed.' });
+  }
+});

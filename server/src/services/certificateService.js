@@ -1,5 +1,6 @@
 // Certificate Vault logic. A certificate row is only written after its file (if any) is
-// stored, so the client never shows a credential the server hasn't durably accepted.
+// stored. Roadmap step 3: a credential can be VERIFIED by validating an Open Badge assertion
+// URL - verified vs self-reported is then visually distinct in the UI and the resume.
 import { extname } from 'node:path';
 import { eq, and, desc } from 'drizzle-orm';
 import { db } from '../db/client.js';
@@ -16,12 +17,11 @@ function httpError(status, message) {
 
 function shape(c) {
   return {
-    id: c.id,
-    title: c.title,
-    issuer: c.issuer,
-    issuedAt: c.issuedAt,
+    id: c.id, title: c.title, issuer: c.issuer, issuedAt: c.issuedAt,
     hasFile: Boolean(c.fileRef),
     isImage: c.fileRef ? IMAGE_EXT.has(extname(c.fileRef).toLowerCase()) : false,
+    verified: Boolean(c.verified),
+    verifySource: c.verifySource || null,
   };
 }
 
@@ -33,7 +33,6 @@ export function listCertificates(userId) {
     .map(shape);
 }
 
-// file is an optional { buffer, originalname }. Stored first, row committed second.
 export function addCertificate(userId, { title, issuer, issuedAt }, file) {
   if (!title || !title.trim()) throw httpError(400, 'Title is required.');
   if (!issuer || !issuer.trim()) throw httpError(400, 'Issuer is required.');
@@ -43,24 +42,19 @@ export function addCertificate(userId, { title, issuer, issuedAt }, file) {
 
   try {
     const row = db.insert(certificates).values({
-      userId,
-      milestoneId: null,
-      title: title.trim(),
-      issuer: issuer.trim(),
-      fileRef,
-      issuedAt: issuedAt ? Number(issuedAt) : Date.now(),
+      userId, milestoneId: null, title: title.trim(), issuer: issuer.trim(),
+      fileRef, issuedAt: issuedAt ? Number(issuedAt) : Date.now(),
     }).returning().get();
     return shape(row);
   } catch (err) {
-    if (fileRef) storage.remove(fileRef); // don't orphan a file if the row failed
+    if (fileRef) storage.remove(fileRef);
     throw err;
   }
 }
 
 export function getCertificateFile(userId, id) {
   const cert = db.select().from(certificates)
-    .where(and(eq(certificates.id, Number(id)), eq(certificates.userId, userId)))
-    .get();
+    .where(and(eq(certificates.id, Number(id)), eq(certificates.userId, userId))).get();
   if (!cert) throw httpError(404, 'Certificate not found.');
   if (!cert.fileRef) throw httpError(404, 'No file attached to this certificate.');
   const path = storage.absolutePath(cert.fileRef);
@@ -70,15 +64,57 @@ export function getCertificateFile(userId, id) {
 
 export function deleteCertificate(userId, id) {
   const cert = db.select().from(certificates)
-    .where(and(eq(certificates.id, Number(id)), eq(certificates.userId, userId)))
-    .get();
+    .where(and(eq(certificates.id, Number(id)), eq(certificates.userId, userId))).get();
   if (!cert) throw httpError(404, 'Certificate not found.');
   db.delete(certificates).where(eq(certificates.id, cert.id)).run();
   if (cert.fileRef) storage.remove(cert.fileRef);
   return { id: cert.id };
 }
 
-// Each stored certificate contributes a flat bonus to the Pathway Score.
+// --- Open Badges verification (step 3) ---
+
+// Pure validator for an Open Badge assertion (v2 hosted assertion or Credly-style). Testable.
+export function parseOpenBadge(json) {
+  if (!json || typeof json !== 'object') return { ok: false };
+  const typeField = json.type ?? json['@type'];
+  const types = Array.isArray(typeField) ? typeField : [typeField];
+  const isAssertion = types.some((t) => typeof t === 'string' && t.toLowerCase().includes('assertion'));
+  const looksLikeBadge = Boolean(json.badge && (json.recipient || json.issuedOn || json.verification));
+  if (!isAssertion && !looksLikeBadge) return { ok: false };
+
+  const badge = typeof json.badge === 'object' ? json.badge : null;
+  const name = badge?.name || json.name || null;
+  const issuer = (badge?.issuer && (badge.issuer.name || badge.issuer)) || json.issuer?.name || null;
+  return { ok: true, name: typeof name === 'string' ? name : null, issuer: typeof issuer === 'string' ? issuer : null };
+}
+
+const URL_RE = /^https:\/\/[^\s]+$/i;
+
+export async function verifyCertificate(userId, id, badgeUrl) {
+  if (!URL_RE.test(badgeUrl || '')) throw httpError(400, 'Provide a valid https badge URL.');
+  const cert = db.select().from(certificates)
+    .where(and(eq(certificates.id, Number(id)), eq(certificates.userId, userId))).get();
+  if (!cert) throw httpError(404, 'Certificate not found.');
+
+  let json;
+  try {
+    const res = await fetch(badgeUrl, { headers: { Accept: 'application/json' } });
+    if (!res.ok) throw new Error(`fetch ${res.status}`);
+    json = await res.json();
+  } catch {
+    throw httpError(400, 'Could not fetch a badge assertion from that URL.');
+  }
+
+  const parsed = parseOpenBadge(json);
+  if (!parsed.ok) throw httpError(400, "That URL isn't a recognisable Open Badge assertion.");
+
+  db.update(certificates).set({ verified: 1, verifySource: badgeUrl })
+    .where(eq(certificates.id, cert.id)).run();
+
+  const updated = db.select().from(certificates).where(eq(certificates.id, cert.id)).get();
+  return shape(updated);
+}
+
 export const POINTS_PER_CERTIFICATE = 10;
 export function certificateCount(userId) {
   return db.select({ id: certificates.id }).from(certificates)

@@ -228,6 +228,20 @@ header{
 .mod-action{display:flex;align-items:center;flex-shrink:0}
 .mod-done{font-size:13px;color:var(--done);font-weight:600;white-space:nowrap}
 
+/* ---------- workshops & tournaments page (reuses .modules / .mod-* rails) ---------- */
+.ev-row{position:relative;display:flex;align-items:stretch;gap:16px;padding:2px 0;margin-bottom:2px}
+.ev-ico{margin-right:7px}
+.ev-type{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:var(--accent);
+  white-space:nowrap;background:rgba(168,107,255,.12);border:1px solid rgba(168,107,255,.28);
+  padding:3px 10px;border-radius:100px}
+.ev-meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}
+.ev-chip{font-size:11.5px;color:var(--ink-soft);background:rgba(255,255,255,.5);
+  border:1px solid var(--glass-line);padding:3px 10px;border-radius:100px;text-transform:capitalize}
+.ev-chip.ev-free{color:#1f7a4d;border-color:rgba(31,122,77,.35);background:rgba(31,122,77,.1)}
+.ev-checked{font-size:11.5px;color:var(--ink-soft)}
+.linklike{background:none;border:none;padding:0;color:var(--accent);font:inherit;font-weight:600;
+  cursor:pointer;text-decoration:underline}
+
 @media(max-width:640px){
   .top-nav{order:5}
   .mod-head h3{font-size:15px}
@@ -303,7 +317,7 @@ header{
 .pull-btn{background:rgba(255,207,107,.25);border:1px solid rgba(255,207,107,.6);color:#8a6a1f;
   border-radius:100px;padding:3px 10px;font-size:10.5px;font-family:inherit;cursor:pointer;text-transform:none;letter-spacing:0}
 
-/* the ATS document — plain, single column, print-ready */
+/* the ATS document - plain, single column, print-ready */
 .resume-preview{position:sticky;top:88px}
 .resume-doc{background:#fff;color:#111;max-width:940px;margin:0 auto;padding:40px 56px;
   border-radius:8px;box-shadow:0 20px 50px rgba(120,90,180,.18);
@@ -428,3 +442,29 @@ header{
   border:1px solid rgba(168,107,255,.35);padding:5px 12px;border-radius:100px}
 .target-link:hover{background:rgba(168,107,255,.1)}
 .target-source{font-size:11.5px;color:var(--ink-soft)}
+
+/* AI "why this fits you" explanation layer (optional - only when a Gemini key is set) */
+.explain-btn{font-size:12.5px;font-weight:600;color:#6b4da8;cursor:pointer;
+  background:linear-gradient(135deg,rgba(168,107,255,.14),rgba(255,154,118,.14));
+  border:1px solid rgba(168,107,255,.35);padding:5px 12px;border-radius:100px}
+.explain-btn:hover:not(:disabled){background:linear-gradient(135deg,rgba(168,107,255,.24),rgba(255,154,118,.24))}
+.explain-btn:disabled{opacity:.6;cursor:default}
+.ai-explain{margin-top:12px;background:linear-gradient(135deg,rgba(168,107,255,.08),rgba(255,255,255,.5));
+  border:1px solid rgba(168,107,255,.28);border-radius:14px;padding:12px 14px}
+.ai-explain-label{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);
+  font-weight:600;margin-bottom:6px}
+.ai-explain p{font-size:13.5px;color:var(--ink);line-height:1.55}
+.ai-explain-err{font-size:12px;color:var(--ink-soft);margin-top:8px}
+
+/* verified vs self-reported credentials */
+.selfreport-badge{display:inline-block;margin-left:8px;font-size:10px;font-weight:600;color:var(--ink-soft);
+  background:rgba(120,90,180,.1);border:1px solid var(--glass-line);padding:2px 8px;border-radius:100px;vertical-align:middle}
+.verify-row{display:flex;gap:8px;margin:8px 0 2px;flex-wrap:wrap}
+.verify-row input{flex:1;min-width:180px;padding:8px 11px;border-radius:10px;border:1px solid var(--glass-line);
+  background:rgba(255,255,255,.8);font-family:inherit;font-size:12.5px;color:var(--ink)}
+
+/* personalised modules: field chip + hint */
+.field-chip{display:inline-block;margin-left:8px;font-size:10.5px;font-weight:600;color:#6b4da8;
+  background:rgba(168,107,255,.14);border:1px solid rgba(168,107,255,.35);padding:2px 9px;border-radius:100px;vertical-align:middle}
+.modules-hint{max-width:720px;margin:18px auto 0;font-size:13px;line-height:1.5;color:var(--ink-soft);
+  background:rgba(255,207,107,.12);border:1px solid rgba(255,207,107,.4);border-radius:14px;padding:12px 16px;text-align:center}
