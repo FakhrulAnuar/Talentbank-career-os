@@ -13,23 +13,23 @@ that literally climbs the path with you.
 
 ---
 
-## ✨ What you can do
+## What you can do
 
 | Feature | What it does |
 |---|---|
-| 🧭 **Ascent Path** | Your roadmap as one flowing vertical timeline. Completed steps glow, your score-orb climbs, and certificates hang along the path like lanterns. |
-| 👤 **Profile & Interests** | Set a target field and interests. This personalises your recommendations and pre-fills your resume. New sign-ups start here. |
-| 📚 **Modules** | A catalog of **real online courses** (Coursera, Khan Academy, LinkedIn Learning, …). Open the course on its provider, then mark it done to earn points and CV tips. |
-| 🏮 **Certificate Vault** | Upload your credentials (PDF/PNG/JPG). Preview images inline, download them anytime. Each certificate adds **+10** to your Pathway Score. |
-| 📄 **Resume / CV Generator** | Auto-builds a clean, **ATS-friendly** resume from your activity. Edit any section and export to PDF (print). |
-| 🎯 **Targets** | High-schoolers get matched to **universities**; university students to **companies** — each scored against your activity with clear reasons and an official apply link. |
+| **Ascent Path** | Your roadmap as one flowing vertical timeline. Completed steps glow, your score-orb climbs, and certificates hang along the path like lanterns. |
+| **Profile & Interests** | Set a target field and interests. This personalises your recommendations and pre-fills your resume. New sign-ups start here. |
+| **Modules** | A catalog of **real online courses** (Coursera, Khan Academy, LinkedIn Learning, …). Open the course on its provider, then mark it done to earn points and CV tips. |
+| **Certificate Vault** | Upload your credentials (PDF/PNG/JPG). Preview images inline, download them anytime. Each certificate adds **+10** to your Pathway Score. |
+| **Resume / CV Generator** | Auto-builds a clean, **ATS-friendly** resume from your activity. Edit any section and export to PDF (print). |
+| **Targets** | High-schoolers get matched to **universities**; university students to **companies** — each scored against your activity with clear reasons and an official apply link. |
 
 The **Pathway Score** is simply: completed milestone points + completed module points +
 (number of certificates × 10). It is always calculated live, so it can never be faked or drift.
 
 ---
 
-## 🧱 Tech stack
+## Tech stack
 
 - **Frontend:** React 18 + Vite 5 (plain JavaScript/JSX — no TypeScript). One hand-written
   stylesheet with a soft "aurora" gradient + glassmorphism look. No UI framework, no router.
@@ -44,7 +44,7 @@ Everything runs locally and offline — there are **no external API keys** requi
 
 ---
 
-## 🚀 Quick start
+## Quick start
 
 You need **Node.js 18 or newer** (works on 20/22/24). Check with `node --version`.
 
@@ -82,7 +82,7 @@ Now open **http://localhost:5173** in your browser.
 
 ---
 
-## 🗂️ Project structure
+## Project Structure
 
 ```
 Ascend-v2/
@@ -110,7 +110,7 @@ Ascend-v2/
 
 ---
 
-## ✏️ Editing the content (no coding needed)
+## Editing the content (no coding needed)
 
 The roadmap, courses, and target schools/companies live in three plain **JSON files** at the
 project root:
@@ -124,7 +124,7 @@ anyone's progress. This makes it easy to add or update content without touching 
 
 ---
 
-## 🔌 API overview
+## API overview
 
 All endpoints live under `/api` and (except sign-up/login) require you to be logged in.
 
@@ -140,7 +140,7 @@ GET  /api/profile            PUT  /api/profile
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
 ASCEND today is a working prototype. The plan to make it fully production-ready is documented
 in `../CLAUDE.md` (§7) and, in short:
@@ -154,7 +154,7 @@ in `../CLAUDE.md` (§7) and, in short:
 
 ---
 
-## 📌 Notes
+## Notes
 
 - This is an educational project. Recommendations are **guidance, not official advice** —
   always verify entry requirements, fees, and deadlines on a school's or employer's official
