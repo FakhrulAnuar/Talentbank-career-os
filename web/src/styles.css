@@ -108,18 +108,22 @@ header{
 .sheet-sub{color:var(--ink-soft);font-size:13px;margin-bottom:8px}
 
 /* ---------- grounded assistant (chat) ---------- */
-.chat-fab{position:fixed;bottom:22px;right:22px;z-index:49;display:flex;align-items:center;gap:8px;
-  font-size:14px;font-weight:600;color:#fff;padding:12px 18px;border-radius:100px;border:none;cursor:pointer;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 12px 30px rgba(168,107,255,.42)}
-.chat-fab:hover{transform:translateY(-1px)}
-.chat-fab-dot{width:8px;height:8px;border-radius:50%;background:#7dffb0;box-shadow:0 0 8px #7dffb0}
-.chat-sheet{position:fixed;top:0;right:0;height:100%;width:min(420px,94vw);z-index:51;display:flex;flex-direction:column;
-  background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(245,240,255,.94));backdrop-filter:blur(24px);
-  border-left:1px solid var(--glass-line);box-shadow:-20px 0 60px rgba(120,90,180,.25);
-  transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1)}
-.chat-sheet.open{transform:translateX(0)}
-.chat-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:22px 22px 12px;
-  border-bottom:1px solid var(--glass-line)}
+.chat-fab{position:fixed;bottom:22px;right:22px;z-index:49;display:flex;align-items:center;
+  font-size:14px;font-weight:600;color:#fff;padding:13px 22px;border-radius:100px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 12px 30px rgba(168,107,255,.42);
+  transition:transform .15s,box-shadow .15s}
+.chat-fab:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(168,107,255,.5)}
+.chat-scrim{position:fixed;inset:0;z-index:50;opacity:0;pointer-events:none}
+.chat-scrim.open{opacity:1;pointer-events:auto}
+.chat-sheet{position:fixed;right:22px;bottom:22px;z-index:51;display:flex;flex-direction:column;
+  width:min(390px,94vw);height:min(560px,78vh);border-radius:24px;overflow:hidden;
+  background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(246,241,255,.98));backdrop-filter:blur(24px);
+  border:1px solid var(--glass-line);box-shadow:0 26px 64px rgba(120,90,180,.34);
+  transform-origin:bottom right;transform:scale(.9) translateY(16px);opacity:0;pointer-events:none;
+  transition:transform .26s cubic-bezier(.34,1.3,.5,1),opacity .22s}
+.chat-sheet.open{transform:scale(1) translateY(0);opacity:1;pointer-events:auto}
+.chat-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 20px 12px;
+  border-bottom:1px solid var(--glass-line);background:linear-gradient(135deg,rgba(168,107,255,.1),rgba(255,154,118,.08))}
 .chat-head h3{font-size:19px}
 .chat-sub{color:var(--ink-soft);font-size:11.5px}
 .chat-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--ink-soft)}
@@ -142,8 +146,7 @@ header{
 .chat-send:disabled{opacity:.5;cursor:default}
 .chat-foot{font-size:11px;color:var(--ink-soft);padding:0 16px 14px;text-align:center}
 @media(max-width:640px){
-  .chat-sheet{width:100%;height:82vh;top:auto;bottom:0;transform:translateY(100%)}
-  .chat-sheet.open{transform:translateY(0)}
+  .chat-sheet{right:12px;left:12px;bottom:12px;width:auto;height:74vh}
 }
 .cert-item{display:flex;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid rgba(168,107,255,.14)}
 .cert-item .fl{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--gold),var(--accent2));
@@ -393,13 +396,15 @@ header{
 /* resume folded into the profile page (university only) */
 .profile-divider{height:1px;background:var(--glass-line);margin:34px auto 6px;max-width:940px}
 .resume-section-head{max-width:940px;margin:0 auto 14px}
+/* high-school 'record' variant: editor only, single column, no document preview */
+.resume-grid.single{grid-template-columns:1fr;max-width:720px;margin:0 auto}
 .resume-section-head h2{font-size:22px}
 .resume-section-head p{color:var(--ink-soft);font-size:13.5px;margin-top:4px}
 
 /* print: only the ATS document, full page, no app chrome */
 @media print{
   @page{margin:0}
-  header,.top-nav,.no-print,.lead,.resume-toolbar,.resume-editor,.profile-card,.profile-divider,.resume-section-head,.chat-fab,.chat-sheet,.scrim{display:none !important}
+  header,.top-nav,.no-print,.lead,.resume-toolbar,.resume-editor,.profile-card,.profile-divider,.resume-section-head,.chat-fab,.chat-sheet,.chat-scrim,.scrim{display:none !important}
   body{background:#fff !important}
   .stage{padding:0 !important;margin:0 !important;max-width:none !important}
   .resume,.resume-grid,.resume-preview{display:block !important;position:static !important;
@@ -521,3 +526,82 @@ header{
   background:rgba(168,107,255,.14);border:1px solid rgba(168,107,255,.35);padding:2px 9px;border-radius:100px;vertical-align:middle}
 .modules-hint{max-width:720px;margin:18px auto 0;font-size:13px;line-height:1.5;color:var(--ink-soft);
   background:rgba(255,207,107,.12);border:1px solid rgba(255,207,107,.4);border-radius:14px;padding:12px 16px;text-align:center}
+
+/* ============================================================================
+   Apple-style "Liquid Glass" for the top bar + the "Ask ASCEND" launcher.
+   The look is CLEAR glass, not milky white: a light backdrop blur with boosted
+   saturation + brightness so the background shows through, a crisp bright
+   specular rim (a bright inset top edge + a thin light border), a faint inner
+   glow, and a soft float shadow. Appended last so it wins the cascade.
+   ============================================================================ */
+
+/* Clear glass surface shared by the header pill controls. */
+.top-nav,
+.path-pill,
+.score-badge,
+.account-chip{
+  background:linear-gradient(180deg,rgba(255,255,255,.42),rgba(255,255,255,.1)) !important;
+  backdrop-filter:blur(12px) saturate(200%) brightness(1.08);
+  -webkit-backdrop-filter:blur(12px) saturate(200%) brightness(1.08);
+  border:1px solid rgba(255,255,255,.55) !important;
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.9),
+    inset 0 -1px 2px rgba(255,255,255,.22),
+    0 6px 20px rgba(90,60,150,.16) !important;
+}
+.score-badge:hover,
+.account-chip:hover,
+.path-pill:hover{
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,1),
+    inset 0 -1px 3px rgba(255,255,255,.3),
+    0 10px 26px rgba(90,60,150,.22) !important;
+}
+
+/* Header bar: strong blur so the clear pills have something to refract. */
+header{
+  backdrop-filter:blur(20px) saturate(200%);-webkit-backdrop-filter:blur(20px) saturate(200%);
+}
+
+/* Inactive nav items get a faint glass hover; the active tab keeps its gradient
+   but gains a bright top highlight so it reads as the same glass family. */
+.top-nav button:hover{background:rgba(255,255,255,.38)}
+.top-nav button.nav-on{
+  background:linear-gradient(135deg,rgba(168,107,255,.85),rgba(255,154,118,.85)) !important;
+  box-shadow:0 6px 16px rgba(168,107,255,.3), inset 0 1px 1px rgba(255,255,255,.7) !important;
+}
+
+/* The floating launcher: clear liquid glass with a bright specular rim.
+   The background is a top-weighted sheen fading to near-clear at the bottom. */
+.chat-fab{
+  background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.07) 62%) !important;
+  border:1px solid rgba(255,255,255,.6) !important;
+  color:#5b3fa0 !important;
+  text-shadow:0 1px 1px rgba(255,255,255,.55);
+  backdrop-filter:blur(10px) saturate(200%) brightness(1.1);
+  -webkit-backdrop-filter:blur(10px) saturate(200%) brightness(1.1);
+  box-shadow:
+    inset 0 1.5px 1px rgba(255,255,255,.95),
+    inset 0 -2px 6px rgba(255,255,255,.3),
+    inset 0 0 20px rgba(255,255,255,.12),
+    0 10px 28px rgba(120,80,170,.26) !important;
+  letter-spacing:.02em;
+}
+.chat-fab:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    inset 0 1.5px 1px rgba(255,255,255,1),
+    inset 0 -2px 8px rgba(255,255,255,.4),
+    0 14px 34px rgba(120,80,170,.34) !important;
+}
+
+/* Chat window: same clear-glass body + bright rim. */
+.chat-sheet{
+  background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(246,241,255,.36)) !important;
+  border:1px solid rgba(255,255,255,.55) !important;
+  backdrop-filter:blur(24px) saturate(200%) brightness(1.05);
+  -webkit-backdrop-filter:blur(24px) saturate(200%) brightness(1.05);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.85),
+    0 26px 64px rgba(90,60,150,.3) !important;
+}

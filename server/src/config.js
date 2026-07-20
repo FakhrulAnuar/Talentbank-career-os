@@ -15,7 +15,8 @@ const {
   // Gemini (Google AI) - powers the optional AI "why this fits you" explanation layer.
   // Rules still decide ranking; Gemini only phrases the reasons. No-op without a key.
   GEMINI_API_KEY = '',
-  GEMINI_MODEL = 'gemini-1.5-flash',
+  GEMINI_MODEL = 'gemini-flash-latest', // alias to the current flash model; override in .env if needed
+
 } = process.env;
 
 const isProd = NODE_ENV === 'production';

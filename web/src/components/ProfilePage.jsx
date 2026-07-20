@@ -58,7 +58,7 @@ export default function ProfilePage({ user, onSaved }) {
     <div className="profile">
       <div className="lead">
         <h2 className="display">Your profile &amp; interests.</h2>
-        <p>Tell us where you're headed. This sharpens your Target matches{isUniversity ? ' and builds your resume below' : ''}.</p>
+        <p>Tell us where you're headed. This sharpens your Target matches and {isUniversity ? 'builds your resume' : 'fills your experience record'} below.</p>
       </div>
 
       {error && <p className="path-error">{error}</p>}
@@ -120,12 +120,8 @@ export default function ProfilePage({ user, onSaved }) {
         </button>
       </div>
 
-      {isUniversity && (
-        <>
-          <div className="profile-divider no-print" />
-          <ResumeSection />
-        </>
-      )}
+      <div className="profile-divider no-print" />
+      <ResumeSection variant={isUniversity ? 'resume' : 'record'} />
     </div>
   );
 }

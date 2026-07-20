@@ -54,11 +54,11 @@ export default function ChatPanel() {
     <>
       {!open && (
         <button className="chat-fab" onClick={() => setOpen(true)} title="Ask the ASCEND assistant">
-          <span className="chat-fab-dot" />💬 Ask ASCEND
+          Ask ASCEND
         </button>
       )}
 
-      <div className={`scrim ${open ? 'open' : ''}`} onClick={() => setOpen(false)} />
+      <div className={`chat-scrim ${open ? 'open' : ''}`} onClick={() => setOpen(false)} />
       <aside className={`chat-sheet ${open ? 'open' : ''}`} aria-hidden={!open}>
         <div className="chat-head">
           <div>
@@ -79,7 +79,7 @@ export default function ChatPanel() {
         <div className="chat-input">
           <textarea
             rows={1}
-            placeholder="Ask about your path, courses, targets… (EN / BM)"
+            placeholder="Ask assistant"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={onKeyDown}

@@ -4,9 +4,50 @@ import { fetchResume, saveResume } from '../api.js';
 const emptyExp = () => ({ title: '', org: '', location: '', start: '', end: '', bullets: [''] });
 const emptyEdu = () => ({ degree: '', school: '', location: '', graduated: '' });
 
-// Resume editor + live ATS preview. Embedded inside ProfilePage for university students
-// (high-schoolers don't get a resume). Self-loads its own data via /api/resume.
-export default function ResumeSection() {
+// Resume/record editor + live single-column preview. Embedded inside ProfilePage for BOTH
+// paths, self-loading via /api/resume. The `variant` switches the labels: 'resume' (university,
+// job-oriented) vs 'record' (high school - "Experience" instead of "Work experience", framed as
+// a place to bank activities, awards and references for the future).
+const LABELS = {
+  resume: {
+    head: 'Your resume, auto-built.',
+    sub: 'ATS-friendly and single-column. Skills and certifications come from your ASCEND activity - edit anything, then export to PDF.',
+    loading: 'Building your resume…',
+    save: 'Save resume',
+    headlinePh: 'Headline (e.g. Aspiring Data Analyst | Python | SQL)',
+    summaryLegend: 'Professional summary',
+    summaryPh: "2-4 sentences about who you are and what you're aiming for.",
+    summaryHead: 'Professional Summary',
+    expLegend: 'Work experience',
+    expTitlePh: 'Role / title',
+    expOrgPh: 'Organisation',
+    bulletPh: 'Achievement / responsibility',
+    addExp: '+ Add role',
+    delExp: 'Remove role',
+    expHead: 'Work Experience',
+  },
+  record: {
+    head: 'Your experience & achievements.',
+    sub: 'A place to keep your activities, awards and references for the future. Add anything useful about yourself and save it - skills and certificates fill in from your ASCEND activity.',
+    loading: 'Loading your record…',
+    save: 'Save record',
+    headlinePh: 'Headline (e.g. Aspiring Engineer | Robotics Club member)',
+    summaryLegend: 'About you',
+    summaryPh: '2-4 sentences about you, your interests and your goals.',
+    summaryHead: 'About Me',
+    expLegend: 'Experience',
+    expTitlePh: 'Title / role (e.g. Club President, Volunteer)',
+    expOrgPh: 'Organisation / club / school',
+    bulletPh: 'What you did or achieved',
+    addExp: '+ Add experience',
+    delExp: 'Remove',
+    expHead: 'Experience',
+  },
+};
+
+export default function ResumeSection({ variant = 'resume' }) {
+  const L = LABELS[variant] || LABELS.resume;
+  const isRecord = variant === 'record'; // high school: form only, no document preview / PDF
   const [resume, setResume] = useState(null);
   const [suggestions, setSuggestions] = useState({ skills: [], certifications: [] });
   const [error, setError] = useState(null);
@@ -35,7 +76,7 @@ export default function ResumeSection() {
   }
 
   if (error && !resume) return <p className="path-error">{error}</p>;
-  if (!resume) return <div className="path-skeleton"><div className="spine" /><p>Building your resume…</p></div>;
+  if (!resume) return <div className="path-skeleton"><div className="spine" /><p>{L.loading}</p></div>;
 
   // --- experience helpers ---
   const updExp = (i, patch) => set({ experience: resume.experience.map((e, j) => (j === i ? { ...e, ...patch } : e)) });
@@ -56,25 +97,25 @@ export default function ResumeSection() {
   return (
     <div className="resume">
       <div className="resume-section-head no-print">
-        <h2 className="display">Your resume, auto-built.</h2>
-        <p>ATS-friendly and single-column. Skills and certifications come from your ASCEND activity - edit anything, then export to PDF.</p>
+        <h2 className="display">{L.head}</h2>
+        <p>{L.sub}</p>
       </div>
 
       <div className="resume-toolbar no-print">
         <button className="primary-btn" onClick={save} disabled={status === 'saving'}>
-          {status === 'saving' ? 'Saving…' : status === 'saved' ? 'Saved ✓' : 'Save resume'}
+          {status === 'saving' ? 'Saving…' : status === 'saved' ? 'Saved ✓' : L.save}
         </button>
-        <button className="ghost-btn" onClick={() => window.print()}>Download PDF (print)</button>
+        {!isRecord && <button className="ghost-btn" onClick={() => window.print()}>Download PDF (print)</button>}
         {error && <span className="resume-err">{error}</span>}
       </div>
 
-      <div className="resume-grid">
+      <div className={`resume-grid ${isRecord ? 'single' : ''}`}>
         {/* ---------- EDITOR ---------- */}
         <div className="resume-editor no-print">
           <fieldset>
             <legend>Header</legend>
             <input placeholder="Full name" value={resume.fullName} onChange={(e) => set({ fullName: e.target.value })} />
-            <input placeholder="Headline (e.g. Aspiring Data Analyst | Python | SQL)" value={resume.headline} onChange={(e) => set({ headline: e.target.value })} />
+            <input placeholder={L.headlinePh} value={resume.headline} onChange={(e) => set({ headline: e.target.value })} />
             <div className="row2">
               <input placeholder="Location" value={resume.location} onChange={(e) => set({ location: e.target.value })} />
               <input placeholder="Phone" value={resume.phone} onChange={(e) => set({ phone: e.target.value })} />
@@ -84,18 +125,18 @@ export default function ResumeSection() {
           </fieldset>
 
           <fieldset>
-            <legend>Professional summary</legend>
-            <textarea rows={4} placeholder="2–4 sentences about who you are and what you're aiming for."
+            <legend>{L.summaryLegend}</legend>
+            <textarea rows={4} placeholder={L.summaryPh}
               value={resume.summary} onChange={(e) => set({ summary: e.target.value })} />
           </fieldset>
 
           <fieldset>
-            <legend>Work experience</legend>
+            <legend>{L.expLegend}</legend>
             {resume.experience.map((e, i) => (
               <div className="sub-entry" key={i}>
                 <div className="row2">
-                  <input placeholder="Role / title" value={e.title} onChange={(ev) => updExp(i, { title: ev.target.value })} />
-                  <input placeholder="Organisation" value={e.org} onChange={(ev) => updExp(i, { org: ev.target.value })} />
+                  <input placeholder={L.expTitlePh} value={e.title} onChange={(ev) => updExp(i, { title: ev.target.value })} />
+                  <input placeholder={L.expOrgPh} value={e.org} onChange={(ev) => updExp(i, { org: ev.target.value })} />
                 </div>
                 <div className="row3">
                   <input placeholder="Location" value={e.location} onChange={(ev) => updExp(i, { location: ev.target.value })} />
@@ -104,17 +145,17 @@ export default function ResumeSection() {
                 </div>
                 {e.bullets.map((b, bi) => (
                   <div className="bullet-row" key={bi}>
-                    <input placeholder="Achievement / responsibility" value={b} onChange={(ev) => updBullet(i, bi, ev.target.value)} />
+                    <input placeholder={L.bulletPh} value={b} onChange={(ev) => updBullet(i, bi, ev.target.value)} />
                     <button className="mini-del" onClick={() => delBullet(i, bi)} title="Remove bullet">✕</button>
                   </div>
                 ))}
                 <div className="entry-actions">
                   <button className="mini-add" onClick={() => addBullet(i)}>+ bullet</button>
-                  <button className="mini-del-entry" onClick={() => delExp(i)}>Remove role</button>
+                  <button className="mini-del-entry" onClick={() => delExp(i)}>{L.delExp}</button>
                 </div>
               </div>
             ))}
-            <button className="mini-add" onClick={addExp}>+ Add role</button>
+            <button className="mini-add" onClick={addExp}>{L.addExp}</button>
           </fieldset>
 
           <fieldset>
@@ -148,7 +189,8 @@ export default function ResumeSection() {
           </fieldset>
         </div>
 
-        {/* ---------- ATS PREVIEW ---------- */}
+        {/* ---------- LIVE PREVIEW (resume variant only; the record is a plain form) ---------- */}
+        {!isRecord && (
         <div className="resume-preview">
           <div className="resume-doc">
             <h1 className="rd-name">{resume.fullName || 'Your Name'}</h1>
@@ -157,14 +199,14 @@ export default function ResumeSection() {
 
             {resume.summary && (
               <section>
-                <h2 className="rd-h">Professional Summary</h2>
+                <h2 className="rd-h">{L.summaryHead}</h2>
                 <p className="rd-summary">{resume.summary}</p>
               </section>
             )}
 
             {resume.experience.some((e) => e.title || e.org) && (
               <section>
-                <h2 className="rd-h">Work Experience</h2>
+                <h2 className="rd-h">{L.expHead}</h2>
                 {resume.experience.filter((e) => e.title || e.org).map((e, i) => (
                   <div className="rd-entry" key={i}>
                     <div className="rd-entry-top">
@@ -210,6 +252,7 @@ export default function ResumeSection() {
             )}
           </div>
         </div>
+        )}
       </div>
     </div>
   );
