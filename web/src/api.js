@@ -59,3 +59,10 @@ export const fetchEvents = () => request('/api/events');
 
 export const explainMatch = (key) =>
   request(`/api/recommendations/${encodeURIComponent(key)}/explain`, { method: 'POST' });
+
+export const fetchCourseGuidance = () =>
+  request('/api/modules/guidance', { method: 'POST' });
+
+export const chatStatus = () => request('/api/chat/status');
+export const sendChat = (messages) =>
+  request('/api/chat', { method: 'POST', body: JSON.stringify({ messages }) });

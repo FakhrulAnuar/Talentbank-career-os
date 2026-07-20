@@ -1,8 +1,19 @@
 import { useEffect, useState, useCallback } from 'react';
 import { fetchProfile, saveProfile } from '../api.js';
+import ResumeSection from './ResumeSection.jsx';
 
 const SUGGESTED = ['Data', 'Coding', 'Engineering', 'Semiconductor', 'Electronics', 'Business',
   'Communication', 'Networking', 'Research', 'Design', 'Analytics', 'Software'];
+
+// Year/stage drives seniority-aware course recommendations. Options differ by path.
+const UNI_YEARS = [
+  ['year1', 'Year 1'], ['year2', 'Year 2'], ['year3', 'Year 3'],
+  ['final', 'Final year'], ['postgrad', 'Postgraduate'],
+];
+const HS_STAGES = [
+  ['form4', 'Form 4 (or lower)'], ['form5', 'Form 5 (SPM year)'],
+  ['preu', 'Pre-U (Form 6 / matriculation / foundation)'],
+];
 
 export default function ProfilePage({ user, onSaved }) {
   const [profile, setProfile] = useState(null);
@@ -41,11 +52,13 @@ export default function ProfilePage({ user, onSaved }) {
     }
   }
 
+  const isUniversity = user?.pathType === 'university';
+
   return (
     <div className="profile">
       <div className="lead">
         <h2 className="display">Your profile &amp; interests.</h2>
-        <p>Tell us where you're headed. This sharpens your Target matches and prefills your resume.</p>
+        <p>Tell us where you're headed. This sharpens your Target matches{isUniversity ? ' and builds your resume below' : ''}.</p>
       </div>
 
       {error && <p className="path-error">{error}</p>}
@@ -59,6 +72,20 @@ export default function ProfilePage({ user, onSaved }) {
             <option value="Electrical & Electronic Engineering" /><option value="Semiconductors" />
             <option value="Software Engineering" /><option value="Business & Management" />
           </datalist>
+        </label>
+
+        <label>{isUniversity ? 'Year of study' : 'School stage'}
+          <select value={profile.yearLevel || ''} onChange={(e) => set({ yearLevel: e.target.value })}>
+            <option value="">Select your {isUniversity ? 'year' : 'stage'}…</option>
+            {(isUniversity ? UNI_YEARS : HS_STAGES).map(([v, label]) => (
+              <option key={v} value={v}>{label}</option>
+            ))}
+          </select>
+          <span className="pf-hint">
+            {isUniversity
+              ? 'We use this to match course difficulty - seniors skip the fundamentals.'
+              : 'We use this to tune your mix - explore broadly early, focus as you approach university.'}
+          </span>
         </label>
 
         <div className="profile-field">
@@ -92,6 +119,13 @@ export default function ProfilePage({ user, onSaved }) {
           {status === 'saving' ? 'Saving…' : status === 'saved' ? 'Saved ✓' : 'Save profile'}
         </button>
       </div>
+
+      {isUniversity && (
+        <>
+          <div className="profile-divider no-print" />
+          <ResumeSection />
+        </>
+      )}
     </div>
   );
 }

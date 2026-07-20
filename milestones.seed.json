@@ -4,6 +4,7 @@
     "status": "DESIGN ARTIFACT - not wired to code yet",
     "preview_seed_count": 3,
     "phases_highschool": ["Foundations", "Skill Building", "Portfolio & CV", "Applications", "Summit"],
+    "removed_keys_note": "hs_resume removed - high-school students don't need a resume; only university keeps uni_resume. See pruneRemovedMilestones() for the boot cleanup of existing DBs.",
     "phases_university": ["Foundations", "Skill Building", "Portfolio & CV", "Experience", "Applications", "Summit"],
     "score_note": "Pathway Score = SUM(points_awarded) once a milestone is completed. Points below are the award-on-completion values."
   },
@@ -15,10 +16,9 @@
     { "order_index": 4,  "phase": "Skill Building", "key": "hs_mod_elective",   "title": "Complete an elective module",      "points": 100, "kind": "module" },
     { "order_index": 5,  "phase": "Portfolio & CV", "key": "hs_first_cert",     "title": "Earn your first certificate",      "points": 100, "kind": "certificate" },
     { "order_index": 6,  "phase": "Portfolio & CV", "key": "hs_project",        "title": "Add a project to your CV",         "points": 100, "kind": "cv" },
-    { "order_index": 7,  "phase": "Portfolio & CV", "key": "hs_resume",         "title": "Generate your resume",             "points": 80,  "kind": "resume" },
-    { "order_index": 8,  "phase": "Applications",   "key": "hs_shortlist",      "title": "Shortlist target universities",    "points": 80,  "kind": "recommendation" },
-    { "order_index": 9,  "phase": "Applications",   "key": "hs_app_ready",      "title": "Complete an application checklist","points": 120, "kind": "milestone" },
-    { "order_index": 10, "phase": "Summit",         "key": "hs_summit",         "title": "University recommendations",       "points": 0,   "kind": "summit" }
+    { "order_index": 7,  "phase": "Applications",   "key": "hs_shortlist",      "title": "Shortlist target universities",    "points": 80,  "kind": "recommendation" },
+    { "order_index": 8,  "phase": "Applications",   "key": "hs_app_ready",      "title": "Complete an application checklist","points": 120, "kind": "milestone" },
+    { "order_index": 9,  "phase": "Summit",         "key": "hs_summit",         "title": "University recommendations",       "points": 0,   "kind": "summit" }
   ],
 
   "university": [

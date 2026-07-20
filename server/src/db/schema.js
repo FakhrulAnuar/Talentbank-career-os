@@ -61,6 +61,7 @@ export const modules = sqliteTable('modules', {
   lastVerified: text('last_verified'),
   tags: text('tags'), // JSON array of lowercase category tags
   alwaysShow: integer('always_show').notNull().default(0), // pin soft-skills for everyone
+  level: text('level'), // 'beginner' | 'intermediate' | 'advanced' - drives seniority-aware recs
 });
 
 export const userModules = sqliteTable(
@@ -108,6 +109,7 @@ export const profiles = sqliteTable('profiles', {
   interests: text('interests'), // JSON array
   bio: text('bio'),
   location: text('location'),
+  yearLevel: text('year_level'), // uni: year1..final/postgrad; HS: form4/form5/preu
   updatedAt: integer('updated_at').notNull(),
 });
 
@@ -145,6 +147,18 @@ export const events = sqliteTable('events', {
   tags: text('tags'),        // JSON array of lowercase tags
   alwaysShow: integer('always_show').notNull().default(0), // pin broadly-useful events
   lastVerified: text('last_verified'),
+});
+
+// Cached AI course-guidance (seniority-aware ordering + a short note over the eligible module
+// set). Keyed by user + a hash of the profile/catalog inputs, so Gemini is called once per
+// unique signal-set - never on every Modules load.
+export const courseGuidance = sqliteTable('course_guidance', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id),
+  inputHash: text('input_hash').notNull(),
+  orderJson: text('order_json'), // JSON array of module keys in suggested order
+  note: text('note'),
+  createdAt: integer('created_at').notNull(),
 });
 
 // Cached AI "why this fits you" explanations. Keyed by user + target + a hash of the inputs,

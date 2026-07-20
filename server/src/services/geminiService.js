@@ -43,6 +43,45 @@ export async function geminiGenerate(prompt, opts = {}) {
   };
   if (system) body.systemInstruction = { parts: [{ text: system }] };
 
+  return callGemini(url, body, timeoutMs);
+}
+
+/**
+ * Multi-turn chat completion for the grounded assistant. `messages` is the recent transcript
+ * as [{ role: 'user'|'assistant', content }]; `system` carries the guardrails + grounding.
+ * Returns the reply text, or null on any problem (no key, error, blocked) so the caller can
+ * degrade gracefully. Same safety settings and timeout as generate().
+ */
+export async function geminiChat(messages, opts = {}) {
+  if (!geminiEnabled()) return null;
+  const { system, maxTokens = 500, timeoutMs = 15000 } = opts;
+
+  const contents = (messages || [])
+    .filter((m) => m && typeof m.content === 'string' && m.content.trim())
+    .map((m) => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content }],
+    }));
+  if (contents.length === 0) return null;
+
+  const url = `${ENDPOINT}/${encodeURIComponent(config.gemini.model)}:generateContent?key=${config.gemini.apiKey}`;
+  const body = {
+    contents,
+    generationConfig: { temperature: 0.5, maxOutputTokens: maxTokens },
+    safetySettings: [
+      { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+      { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_LOW_AND_ABOVE' },
+      { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+    ],
+  };
+  if (system) body.systemInstruction = { parts: [{ text: system }] };
+
+  return callGemini(url, body, timeoutMs);
+}
+
+// Shared POST + parse used by both generate() and chat().
+async function callGemini(url, body, timeoutMs) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {

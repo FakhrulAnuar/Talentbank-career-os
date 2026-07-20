@@ -5,17 +5,17 @@ import AscentPath from './components/AscentPath.jsx';
 import AuthFlow from './components/AuthFlow.jsx';
 import ModulesPage from './components/ModulesPage.jsx';
 import VaultPage from './components/VaultPage.jsx';
-import ResumePage from './components/ResumePage.jsx';
 import TargetsPage from './components/TargetsPage.jsx';
 import ProfilePage from './components/ProfilePage.jsx';
 import WorkshopsPage from './components/WorkshopsPage.jsx';
+import ChatPanel from './components/ChatPanel.jsx';
 
 export default function App() {
   const [authUser, setAuthUser] = useState(undefined); // undefined=loading, null=logged out
   const [journey, setJourney] = useState(null);
   const [error, setError] = useState(null);
   const [completingKey, setCompletingKey] = useState(null);
-  const [view, setView] = useState('path'); // 'profile' | 'path' | 'modules' | 'workshops' | 'vault' | 'resume' | 'targets'
+  const [view, setView] = useState('path'); // 'profile' | 'path' | 'modules' | 'workshops' | 'vault' | 'targets'
 
   const loadJourney = useCallback(() => {
     setError(null);
@@ -96,10 +96,10 @@ export default function App() {
         {view === 'modules' && <ModulesPage user={authUser} onScoreChanged={loadJourney} />}
         {view === 'workshops' && <WorkshopsPage user={authUser} onNavigate={setView} />}
         {view === 'vault' && <VaultPage onScoreChanged={loadJourney} />}
-        {view === 'resume' && <ResumePage />}
         {view === 'targets' && <TargetsPage onNavigate={setView} />}
         {view === 'profile' && <ProfilePage user={authUser} onSaved={loadJourney} />}
       </main>
+      <ChatPanel />
     </>
   );
 }

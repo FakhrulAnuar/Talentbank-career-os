@@ -21,6 +21,31 @@ function httpError(status, message) {
   return e;
 }
 
+// --- Seniority-aware level policy -------------------------------------------------------
+// Which course levels are appropriate to RECOMMEND for a given year/stage. Returning null
+// means "no filtering" (high-schoolers and users who haven't set a year see every level;
+// fundamentals are fine when you're just starting). For university seniors we drop 'beginner'
+// so a final-year never gets recommended an intro/fundamentals course.
+export function allowedLevels(pathType, yearLevel) {
+  if (pathType !== 'university') return null; // high school: exploration, no difficulty gate
+  switch (yearLevel) {
+    case 'year1':
+    case 'year2': return new Set(['beginner', 'intermediate']);
+    case 'year3': return new Set(['intermediate', 'advanced']);
+    case 'final':
+    case 'postgrad': return new Set(['intermediate', 'advanced']);
+    default: return null; // year not set -> no filtering
+  }
+}
+
+// Senior university students also get career-prep courses (interview, portfolio) pinned, even
+// if those don't tag-match their field - job-readiness is universal at that stage.
+export function isSenior(pathType, yearLevel) {
+  return pathType === 'university' && ['year3', 'final', 'postgrad'].includes(yearLevel);
+}
+
+const isCareerPrep = (tags) => tags.includes('career-prep');
+
 /** Load/refresh the module catalog from the seed file (upsert by key). */
 export function ensureModules() {
   const seed = JSON.parse(readFileSync(seedPath, 'utf8'));
@@ -31,6 +56,7 @@ export function ensureModules() {
       points: m.points ?? 0, provider: m.provider ?? null, url: m.url ?? null,
       verified: m.verified ? 1 : 0, lastVerified: m.lastVerified ?? null,
       tags: JSON.stringify(m.tags ?? []), alwaysShow: m.alwaysShow ? 1 : 0,
+      level: m.level ?? null,
     };
     db.insert(modules).values(row).onConflictDoUpdate({
       target: modules.key,
@@ -38,7 +64,7 @@ export function ensureModules() {
         pathType: row.pathType, title: row.title, phase: row.phase, description: row.description,
         cvTip: row.cvTip, minutes: row.minutes, points: row.points, provider: row.provider,
         url: row.url, verified: row.verified, lastVerified: row.lastVerified,
-        tags: row.tags, alwaysShow: row.alwaysShow,
+        tags: row.tags, alwaysShow: row.alwaysShow, level: row.level,
       },
     }).run();
   }
@@ -54,10 +80,19 @@ function matchScore(tags, signalWords) {
   return score;
 }
 
-/** Modules visible to this path, each flagged essential/recommended for the UI groups. */
+/**
+ * Modules visible to this path, each flagged essential/recommended for the UI groups.
+ * Recommendation is now SENIORITY-AWARE: a course is 'recommended' only when it tag-matches
+ * the user's profile AND its level is appropriate for their year (allowedLevels). This is what
+ * stops a final-year engineering student being recommended a beginner fundamentals course -
+ * such a course is still listed (under "More courses"), just not recommended. Senior university
+ * students also get career-prep courses pinned even without a field tag-match.
+ */
 export function listModules(userId, pathType) {
   const profile = getProfile(userId);
   const signalWords = new Set([...words(profile.targetField), ...(profile.interests || []).flatMap((i) => words(i))]);
+  const allowed = allowedLevels(pathType, profile.yearLevel); // null = no level gate
+  const senior = isSenior(pathType, profile.yearLevel);
 
   const rows = db
     .select({
@@ -66,7 +101,7 @@ export function listModules(userId, pathType) {
       minutes: modules.minutes, points: modules.points,
       provider: modules.provider, url: modules.url,
       verified: modules.verified, lastVerified: modules.lastVerified,
-      tags: modules.tags, alwaysShow: modules.alwaysShow,
+      tags: modules.tags, alwaysShow: modules.alwaysShow, level: modules.level,
       status: userModules.status,
     })
     .from(modules)
@@ -78,12 +113,20 @@ export function listModules(userId, pathType) {
   return rows.map((r) => {
     const tags = r.tags ? JSON.parse(r.tags) : [];
     const score = matchScore(tags, signalWords);
+    // A course fits the student's level unless a gate is active and excludes it.
+    const levelEligible = !allowed || !r.level || allowed.has(r.level);
+    const careerPrep = isCareerPrep(tags);
+    // Recommended: right level AND (matches your field, or you're senior and it's career-prep).
+    const recommended = levelEligible && (score > 0 || (senior && careerPrep));
     return {
       ...r,
       tags,
+      level: r.level || null,
       verified: Boolean(r.verified),
       essential: Boolean(r.alwaysShow),
-      recommended: score > 0,
+      careerPrep,
+      levelEligible,
+      recommended,
       matchScore: score,
       status: r.status ?? 'not_started',
     };

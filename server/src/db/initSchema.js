@@ -128,6 +128,15 @@ export function ensureSchema() {
       created_at INTEGER NOT NULL
     );
     CREATE INDEX IF NOT EXISTS idx_recexpl_lookup ON rec_explanations(user_id, target_key, input_hash);
+    CREATE TABLE IF NOT EXISTS course_guidance (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      input_hash TEXT NOT NULL,
+      order_json TEXT,
+      note TEXT,
+      created_at INTEGER NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_guidance_lookup ON course_guidance(user_id, input_hash);
     CREATE TABLE IF NOT EXISTS events (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       key TEXT NOT NULL UNIQUE,
@@ -157,4 +166,6 @@ export function ensureSchema() {
   ensureColumn('modules', 'always_show', 'INTEGER NOT NULL DEFAULT 0');
   ensureColumn('certificates', 'verified', 'INTEGER NOT NULL DEFAULT 0');
   ensureColumn('certificates', 'verify_source', 'TEXT');
+  ensureColumn('modules', 'level', 'TEXT');
+  ensureColumn('profiles', 'year_level', 'TEXT');
 }

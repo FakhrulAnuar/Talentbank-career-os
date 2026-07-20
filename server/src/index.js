@@ -3,7 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { config } from './config.js';
 import { ensureSchema } from './db/initSchema.js';
-import { ensureMilestones } from './services/pathSeeder.js';
+import { ensureMilestones, pruneRemovedMilestones } from './services/pathSeeder.js';
 import { ensureModules } from './services/moduleService.js';
 import { ensureTargets } from './services/targetService.js';
 import { ensureEvents } from './services/eventService.js';
@@ -17,10 +17,12 @@ import { recommendationsRouter } from './routes/recommendations.js';
 import { profileRouter } from './routes/profile.js';
 import { ingestRouter } from './routes/ingest.js';
 import { eventsRouter } from './routes/events.js';
+import { chatRouter } from './routes/chat.js';
 
 // Self-initialize: create tables + load/refresh catalogs from the seed files.
 ensureSchema();
 ensureMilestones();
+pruneRemovedMilestones(); // remove retired steps (e.g. hs_resume) from existing DBs
 ensureModules();
 ensureTargets();
 ensureEvents();
@@ -40,6 +42,7 @@ app.use('/api', recommendationsRouter);
 app.use('/api', profileRouter);
 app.use('/api', ingestRouter);
 app.use('/api', eventsRouter);
+app.use('/api', chatRouter);
 
 // Optional scheduled ingestion (step 2). Off unless INGEST_INTERVAL_MIN > 0.
 if (config.ingestIntervalMin > 0) {

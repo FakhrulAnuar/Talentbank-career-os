@@ -4,7 +4,9 @@ import { fetchResume, saveResume } from '../api.js';
 const emptyExp = () => ({ title: '', org: '', location: '', start: '', end: '', bullets: [''] });
 const emptyEdu = () => ({ degree: '', school: '', location: '', graduated: '' });
 
-export default function ResumePage() {
+// Resume editor + live ATS preview. Embedded inside ProfilePage for university students
+// (high-schoolers don't get a resume). Self-loads its own data via /api/resume.
+export default function ResumeSection() {
   const [resume, setResume] = useState(null);
   const [suggestions, setSuggestions] = useState({ skills: [], certifications: [] });
   const [error, setError] = useState(null);
@@ -53,7 +55,7 @@ export default function ResumePage() {
 
   return (
     <div className="resume">
-      <div className="lead no-print">
+      <div className="resume-section-head no-print">
         <h2 className="display">Your resume, auto-built.</h2>
         <p>ATS-friendly and single-column. Skills and certifications come from your ASCEND activity - edit anything, then export to PDF.</p>
       </div>
