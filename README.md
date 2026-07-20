@@ -74,7 +74,7 @@ Now open http://localhost:5173 in your browser.
 
 ### 3. Log in
 
-- Try the demo account: `demo@ascend.local` with password `demo1234`
+- Try the demo account: `demo_hs@ascend.local` for highschool students, `demo_u@ascend.local` for university students with password `demo1234`
 - Or create your own: click Create an account, choose High School or University, and you will
   start on the Profile page.
 
