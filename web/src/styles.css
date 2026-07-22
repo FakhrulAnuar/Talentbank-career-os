@@ -308,6 +308,84 @@ header{
 .sch-reqs li{font-size:12.5px;color:var(--ink-soft);line-height:1.5;margin-bottom:3px}
 .sch-award.pay-paid{color:#1f7a4d;border-color:rgba(31,122,77,.35);background:rgba(31,122,77,.1)}
 
+/* ============================================================================
+   Mobile / responsive. The app is a responsive web app; below 760px the nav
+   collapses to a hamburger + slide-in drawer and every page stacks to one
+   column. These elements are hidden on desktop.
+   ============================================================================ */
+.nav-toggle, .nav-close { display: none; }
+.nav-scrim { display: none; }
+
+@media (max-width: 760px) {
+  header { gap: 10px; padding: 12px 16px; }
+  .brand { margin-right: auto; }
+  .brand span { display: none; }
+  .brand h1 { font-size: 17px; }
+  .brand .dot { width: 30px; height: 30px; }
+  .path-pill { display: none; }
+  .account-name { display: none; }
+  .score-badge { padding: 6px 8px 6px 12px; }
+  .score-badge b { font-size: 14px; }
+  .score-badge small { font-size: 9px; }
+
+  /* hamburger button */
+  .nav-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 42px; height: 42px; flex-shrink: 0; font-size: 19px; cursor: pointer; color: var(--ink);
+    background: linear-gradient(180deg, rgba(255,255,255,.5), rgba(255,255,255,.1));
+    border: 1px solid rgba(255,255,255,.6); border-radius: 13px;
+    backdrop-filter: blur(10px) saturate(180%); -webkit-backdrop-filter: blur(10px) saturate(180%);
+  }
+
+  /* nav becomes a left slide-in drawer */
+  .nav-scrim {
+    display: block; position: fixed; inset: 0; z-index: 59;
+    background: rgba(60,40,90,.3); opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .nav-scrim.open { opacity: 1; pointer-events: auto; }
+  .top-nav {
+    position: fixed !important; top: 0; left: 0; height: 100%; width: min(264px, 82vw); z-index: 60;
+    flex-direction: column; align-items: stretch; gap: 6px;
+    border-radius: 0 !important; border: none !important; border-right: 1px solid var(--glass-line) !important;
+    padding: 62px 16px 20px;
+    background: linear-gradient(180deg, rgba(255,255,255,.97), rgba(246,241,255,.99)) !important;
+    backdrop-filter: blur(22px) saturate(180%); -webkit-backdrop-filter: blur(22px) saturate(180%);
+    box-shadow: 20px 0 60px rgba(120,90,180,.28) !important;
+    transform: translateX(-100%); transition: transform .3s cubic-bezier(.4,0,.2,1); overflow-y: auto;
+  }
+  .top-nav.open { transform: translateX(0); }
+  .top-nav button { width: 100%; text-align: left; padding: 12px 14px; font-size: 15px; border-radius: 12px; }
+  .nav-close {
+    display: block; position: absolute; top: 15px; right: 15px;
+    background: none; border: none; font-size: 20px; color: var(--ink-soft); cursor: pointer;
+  }
+
+  /* generous tap targets across the app */
+  .primary-btn, .ghost-btn, .mark-done, .go-course, .explain-btn, .target-link,
+  .chat-send, .account-signout { min-height: 42px; }
+
+  /* Ascent Path: collapse the centre spine + alternating nodes to one column */
+  .stage { padding: 28px 16px 100px; }
+  .spine, .spine.future { left: 22px; transform: none; }
+  .node { min-height: auto; margin-bottom: 6px; }
+  .node .content { width: calc(100% - 52px); }
+  .node.left .content, .node.right .content { margin-left: 44px; margin-right: 0; text-align: left; }
+  .marker { left: 22px; transform: translateX(-50%); }
+  .orb-wrap { left: 22px; transform: translateX(-50%); text-align: left; }
+  .orb-wrap .coach { white-space: normal; }
+
+  /* forms + grids stack */
+  .row2, .row3 { grid-template-columns: 1fr; }
+  .vault-grid { grid-template-columns: 1fr; }
+  .resume-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 420px) {
+  .lead h2 { font-size: 24px; }
+  .mod-head { gap: 4px; }
+  .ev-meta { gap: 6px; }
+}
+
 @media(max-width:640px){
   .top-nav{order:5}
   .mod-head h3{font-size:15px}

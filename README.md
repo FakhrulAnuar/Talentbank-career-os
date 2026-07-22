@@ -83,6 +83,15 @@ Windows note: `better-sqlite3` needs a prebuilt binary, which `npm install` fetc
 automatically. The database self-migrates on start, so new columns and tables are added for you.
 Only if something goes wrong should you delete `server/ascend.db` and run `npm run seed` again.
 
+### On mobile
+
+The web app is fully responsive, so students can just open the site in their phone browser. On
+small screens the navigation collapses into a hamburger menu with a slide-out drawer, and every
+page stacks to a single column. It is also an installable Progressive Web App: on a phone, open
+the site and choose Add to Home Screen to launch it full-screen with its own icon. The installable
+behaviour uses a service worker that only runs in a production build (`npm run build`), so local
+development stays clean.
+
 ---
 
 ## Optional AI features (Google Gemini)

@@ -1,9 +1,20 @@
+import { useState } from 'react';
 import AccountMenu from './AccountMenu.jsx';
+
+// Top bar. On desktop the nav is an inline pill row; on mobile it collapses to a hamburger that
+// opens a slide-in drawer (the nav-toggle / nav-scrim / .top-nav.open are driven from here and
+// styled in the mobile media query).
 export default function TopBar({ journey, user, view, onNavigate, onOpenVault, onLogout }) {
-  const pathLabel = (user?.pathType ?? journey?.user?.pathType) === 'university'
-    ? '🎓 University path' : '🎒 High School path';
+  const [menuOpen, setMenuOpen] = useState(false);
+  const pathType = user?.pathType ?? journey?.user?.pathType;
+  const pathLabel = pathType === 'university' ? '🎓 University path' : '🎒 High School path';
+  const go = (v) => { onNavigate(v); setMenuOpen(false); };
+  const cls = (v) => (view === v ? 'nav-on' : '');
+
   return (
     <header>
+      <button className="nav-toggle" aria-label="Open menu" onClick={() => setMenuOpen(true)}>☰</button>
+
       <div className="brand">
         <div className="dot" />
         <div>
@@ -12,19 +23,21 @@ export default function TopBar({ journey, user, view, onNavigate, onOpenVault, o
         </div>
       </div>
 
-      <nav className="top-nav">
-        <button className={view === 'profile' ? 'nav-on' : ''} onClick={() => onNavigate('profile')}>Profile</button>
-        <button className={view === 'path' ? 'nav-on' : ''} onClick={() => onNavigate('path')}>Path</button>
-        <button className={view === 'modules' ? 'nav-on' : ''} onClick={() => onNavigate('modules')}>Modules</button>
-        <button className={view === 'workshops' ? 'nav-on' : ''} onClick={() => onNavigate('workshops')}>Workshops</button>
-        {(user?.pathType ?? journey?.user?.pathType) !== 'university' && (
-          <button className={view === 'scholarships' ? 'nav-on' : ''} onClick={() => onNavigate('scholarships')}>Scholarships</button>
+      <div className={`nav-scrim ${menuOpen ? 'open' : ''}`} onClick={() => setMenuOpen(false)} />
+      <nav className={`top-nav ${menuOpen ? 'open' : ''}`}>
+        <button className="nav-close" aria-label="Close menu" onClick={() => setMenuOpen(false)}>✕</button>
+        <button className={cls('profile')} onClick={() => go('profile')}>Profile</button>
+        <button className={cls('path')} onClick={() => go('path')}>Path</button>
+        <button className={cls('modules')} onClick={() => go('modules')}>Modules</button>
+        <button className={cls('workshops')} onClick={() => go('workshops')}>Workshops</button>
+        {pathType !== 'university' && (
+          <button className={cls('scholarships')} onClick={() => go('scholarships')}>Scholarships</button>
         )}
-        {(user?.pathType ?? journey?.user?.pathType) === 'university' && (
-          <button className={view === 'internships' ? 'nav-on' : ''} onClick={() => onNavigate('internships')}>Internships</button>
+        {pathType === 'university' && (
+          <button className={cls('internships')} onClick={() => go('internships')}>Internships</button>
         )}
-        <button className={view === 'vault' ? 'nav-on' : ''} onClick={() => onNavigate('vault')}>Vault</button>
-        <button className={view === 'targets' ? 'nav-on' : ''} onClick={() => onNavigate('targets')}>Targets</button>
+        <button className={cls('vault')} onClick={() => go('vault')}>Vault</button>
+        <button className={cls('targets')} onClick={() => go('targets')}>Targets</button>
       </nav>
 
       <div className="path-pill">{pathLabel}</div>
