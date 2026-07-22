@@ -27,7 +27,7 @@ export function geminiEnabled() {
  */
 export async function geminiGenerate(prompt, opts = {}) {
   if (!geminiEnabled()) return null;
-  const { system, maxTokens = 220, timeoutMs = 30000 } = opts;
+  const { system, maxTokens = 500, timeoutMs = 30000 } = opts;
 
   // Auth via the x-goog-api-key header (not the ?key= query param) so both the legacy
   // 'AIza' standard keys and the newer 'AQ.' auth keys work. See callGemini().
@@ -115,6 +115,14 @@ async function callGemini(url, body, timeoutMs) {
         return text || null;
       }
       const detail = await res.text().catch(() => '');
+      // Some models reject thinkingConfig (e.g. newer Gemini uses a different thinking control),
+      // returning 400 INVALID_ARGUMENT. Strip it once and retry so the call still succeeds.
+      if (res.status === 400 && body?.generationConfig?.thinkingConfig) {
+        console.warn('[gemini] 400 with thinkingConfig - retrying without it');
+        delete body.generationConfig.thinkingConfig;
+        clearTimeout(timer);
+        continue;
+      }
       if (RETRIABLE.has(res.status) && attempt < MAX_ATTEMPTS) {
         console.warn(`[gemini] API ${res.status} (attempt ${attempt}/${MAX_ATTEMPTS}) - retrying…`);
         clearTimeout(timer);

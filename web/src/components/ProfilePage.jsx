@@ -14,6 +14,10 @@ const HS_STAGES = [
   ['form4', 'Form 4 (or lower)'], ['form5', 'Form 5 (SPM year)'],
   ['preu', 'Pre-U (Form 6 / matriculation / foundation)'],
 ];
+// Malaysian states + federal territories, used to surface universities nearest the student.
+const MY_STATES = ['Johor', 'Kedah', 'Kelantan', 'Melaka', 'Negeri Sembilan', 'Pahang', 'Perak',
+  'Perlis', 'Pulau Pinang', 'Sabah', 'Sarawak', 'Selangor', 'Terengganu', 'Kuala Lumpur',
+  'Labuan', 'Putrajaya'];
 
 export default function ProfilePage({ user, onSaved }) {
   const [profile, setProfile] = useState(null);
@@ -42,7 +46,8 @@ export default function ProfilePage({ user, onSaved }) {
     setStatus('saving');
     setError(null);
     try {
-      const { milestoneCompleted } = await saveProfile(profile);
+      // State is now the single location field, so keep profile.location in sync with it.
+      const { milestoneCompleted } = await saveProfile({ ...profile, location: profile.state });
       setStatus('saved');
       if (milestoneCompleted) onSaved?.();
       setTimeout(() => setStatus(''), 1800);
@@ -88,6 +93,14 @@ export default function ProfilePage({ user, onSaved }) {
           </span>
         </label>
 
+        <label>Your state
+          <select value={profile.state || ''} onChange={(e) => set({ state: e.target.value })}>
+            <option value="">Select your state…</option>
+            {MY_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+          <span className="pf-hint">We use this to show universities near you first. International options still appear under "Explore abroad".</span>
+        </label>
+
         <div className="profile-field">
           <span className="pf-label">Interests</span>
           <div className="chips">
@@ -108,11 +121,6 @@ export default function ProfilePage({ user, onSaved }) {
         <label>Short bio
           <textarea rows={3} placeholder="A sentence or two about you and your goals."
             value={profile.bio} onChange={(e) => set({ bio: e.target.value })} />
-        </label>
-
-        <label>Location
-          <input placeholder="e.g. Penang, Malaysia" value={profile.location}
-            onChange={(e) => set({ location: e.target.value })} />
         </label>
 
         <button className="primary-btn" onClick={save} disabled={status === 'saving'}>

@@ -12,15 +12,22 @@ const arr = (a, max = 20, itemMax = 60) =>
 const YEAR_LEVELS = new Set(['year1', 'year2', 'year3', 'final', 'postgrad', 'form4', 'form5', 'preu']);
 const yearLevel = (v) => (YEAR_LEVELS.has(v) ? v : '');
 
+// Malaysian states + federal territories - used to surface universities nearest the student.
+const STATES = new Set(['Johor', 'Kedah', 'Kelantan', 'Melaka', 'Negeri Sembilan', 'Pahang',
+  'Perak', 'Perlis', 'Pulau Pinang', 'Sabah', 'Sarawak', 'Selangor', 'Terengganu',
+  'Kuala Lumpur', 'Labuan', 'Putrajaya']);
+const stateOf = (v) => (STATES.has(v) ? v : '');
+
 export function getProfile(userId) {
   const row = db.select().from(profiles).where(eq(profiles.userId, userId)).get();
-  if (!row) return { targetField: '', interests: [], bio: '', location: '', yearLevel: '' };
+  if (!row) return { targetField: '', interests: [], bio: '', location: '', yearLevel: '', state: '' };
   return {
     targetField: row.targetField || '',
     interests: row.interests ? JSON.parse(row.interests) : [],
     bio: row.bio || '',
     location: row.location || '',
     yearLevel: row.yearLevel || '',
+    state: row.state || '',
   };
 }
 
@@ -31,13 +38,14 @@ export function saveProfile(userId, data) {
     bio: str(data?.bio, 1000),
     location: str(data?.location, 120),
     yearLevel: yearLevel(data?.yearLevel),
+    state: stateOf(data?.state),
   };
   const now = Date.now();
   db.insert(profiles)
-    .values({ userId, targetField: clean.targetField, interests: JSON.stringify(clean.interests), bio: clean.bio, location: clean.location, yearLevel: clean.yearLevel, updatedAt: now })
+    .values({ userId, targetField: clean.targetField, interests: JSON.stringify(clean.interests), bio: clean.bio, location: clean.location, yearLevel: clean.yearLevel, state: clean.state, updatedAt: now })
     .onConflictDoUpdate({
       target: profiles.userId,
-      set: { targetField: clean.targetField, interests: JSON.stringify(clean.interests), bio: clean.bio, location: clean.location, yearLevel: clean.yearLevel, updatedAt: now },
+      set: { targetField: clean.targetField, interests: JSON.stringify(clean.interests), bio: clean.bio, location: clean.location, yearLevel: clean.yearLevel, state: clean.state, updatedAt: now },
     })
     .run();
   return clean;

@@ -29,7 +29,12 @@ function TargetRow({ t, rank, isCompany, aiExplain }) {
       <div className="target-rank">#{rank + 1}</div>
       <div className="target-main">
         <div className="target-head">
-          <h3>{t.name}</h3>
+          <h3>
+            {t.name}
+            {t.scope === 'international'
+              ? <span className="scope-chip intl">International</span>
+              : (t.state && <span className="scope-chip">{t.state}</span>)}
+          </h3>
           <div className="target-score"><span>{t.score}%</span> match</div>
         </div>
         <div className="target-meta">{t.field} · {t.location}</div>
@@ -80,11 +85,22 @@ export default function TargetsPage() {
 
   const isCompany = data.type === 'company';
 
+  // Keep the global rank (already sorted by score), then split into proximity groups.
+  const ranked = data.items.map((t, i) => ({ ...t, rank: i }));
+  const groups = [
+    { key: 'near', label: 'Near you', items: ranked.filter((t) => t.group === 'near') },
+    { key: 'local', label: isCompany ? 'In Malaysia' : 'Elsewhere in Malaysia', items: ranked.filter((t) => t.group === 'local') },
+    { key: 'international', label: 'Explore abroad', items: ranked.filter((t) => t.group === 'international') },
+  ].filter((g) => g.items.length > 0);
+
   return (
     <div className="targets">
       <div className="lead">
         <h2 className="display">{isCompany ? 'Companies matched to you.' : 'Universities matched to you.'}</h2>
-        <p>Ranked by how well each fits your ASCEND activity. Complete more modules and add certificates to climb the matches.</p>
+        <p>{isCompany
+          ? 'Ranked by how well each fits your ASCEND activity, Malaysian employers first, with international options to explore.'
+          : 'Ranked by fit and location, universities near you first, then elsewhere in Malaysia, then options abroad. Set your state on the Profile page to sharpen this.'}
+        </p>
       </div>
 
       <p className="honesty-note">
@@ -92,11 +108,16 @@ export default function TargetsPage() {
         always verify entry requirements, deadlines and fees on the official site.
       </p>
 
-      <div className="target-list">
-        {data.items.map((t, i) => (
-          <TargetRow key={t.id} t={t} rank={i} isCompany={isCompany} aiExplain={data.aiExplain} />
-        ))}
-      </div>
+      {groups.map((g) => (
+        <div className="target-group" key={g.key}>
+          <div className="phase-label">{g.label}</div>
+          <div className="target-list">
+            {g.items.map((t) => (
+              <TargetRow key={t.id} t={t} rank={t.rank} isCompany={isCompany} aiExplain={data.aiExplain} />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

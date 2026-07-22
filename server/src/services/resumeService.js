@@ -43,6 +43,7 @@ function defaultDoc(user, suggestions) {
     education: [],     // { degree, school, location, graduated }
     skills: suggestions.skills,
     certifications: suggestions.certifications,
+    references: [],    // { name, role, contact, note } - "Recommendations" (uni) / "Testimonies" (HS)
   };
 }
 
@@ -71,6 +72,12 @@ function sanitize(data) {
     })),
     skills: arrStr(data.skills, 60, 160),
     certifications: arrStr(data.certifications, 60, 200),
+    references: (Array.isArray(data.references) ? data.references : []).slice(0, 10).map((r) => ({
+      name: str(r.name, 120),
+      role: str(r.role, 160),
+      contact: str(r.contact, 160),
+      note: str(r.note, 600),
+    })),
   };
 }
 

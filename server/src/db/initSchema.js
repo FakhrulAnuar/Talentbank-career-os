@@ -137,6 +137,62 @@ export function ensureSchema() {
       created_at INTEGER NOT NULL
     );
     CREATE INDEX IF NOT EXISTS idx_guidance_lookup ON course_guidance(user_id, input_hash);
+    CREATE TABLE IF NOT EXISTS internships (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      key TEXT NOT NULL UNIQUE,
+      company TEXT NOT NULL,
+      role TEXT,
+      field TEXT,
+      location TEXT,
+      state TEXT,
+      mode TEXT,
+      duration TEXT,
+      paid TEXT,
+      blurb TEXT,
+      requirements TEXT,
+      deadline TEXT,
+      url TEXT,
+      tags TEXT,
+      always_show INTEGER NOT NULL DEFAULT 0,
+      last_verified TEXT
+    );
+    CREATE TABLE IF NOT EXISTS internship_guides (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      internship_key TEXT NOT NULL,
+      input_hash TEXT NOT NULL,
+      text TEXT NOT NULL,
+      created_at INTEGER NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_intguide_lookup ON internship_guides(user_id, internship_key, input_hash);
+    CREATE TABLE IF NOT EXISTS scholarships (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      key TEXT NOT NULL UNIQUE,
+      name TEXT NOT NULL,
+      provider TEXT,
+      type TEXT,
+      award TEXT,
+      stage TEXT,
+      field TEXT,
+      benefit TEXT,
+      requirements TEXT,
+      deadline TEXT,
+      scope TEXT,
+      state TEXT,
+      url TEXT,
+      tags TEXT,
+      always_show INTEGER NOT NULL DEFAULT 0,
+      last_verified TEXT
+    );
+    CREATE TABLE IF NOT EXISTS scholarship_guides (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      scholarship_key TEXT NOT NULL,
+      input_hash TEXT NOT NULL,
+      text TEXT NOT NULL,
+      created_at INTEGER NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_schguide_lookup ON scholarship_guides(user_id, scholarship_key, input_hash);
     CREATE TABLE IF NOT EXISTS events (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       key TEXT NOT NULL UNIQUE,
@@ -168,4 +224,7 @@ export function ensureSchema() {
   ensureColumn('certificates', 'verify_source', 'TEXT');
   ensureColumn('modules', 'level', 'TEXT');
   ensureColumn('profiles', 'year_level', 'TEXT');
+  ensureColumn('profiles', 'state', 'TEXT');
+  ensureColumn('targets', 'scope', 'TEXT');
+  ensureColumn('targets', 'state', 'TEXT');
 }

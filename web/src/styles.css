@@ -292,6 +292,22 @@ header{
 .linklike{background:none;border:none;padding:0;color:var(--accent);font:inherit;font-weight:600;
   cursor:pointer;text-decoration:underline}
 
+/* ---------- scholarships (reuses .modules / .ev-* rails) ---------- */
+.sch-type{display:inline-block;margin-left:8px;font-size:10px;font-weight:600;letter-spacing:.04em;
+  text-transform:uppercase;padding:2px 9px;border-radius:100px;vertical-align:middle}
+.sch-merit{background:rgba(168,107,255,.14);color:#6b4da8;border:1px solid rgba(168,107,255,.3)}
+.sch-need{background:rgba(31,122,77,.12);color:#1f7a4d;border:1px solid rgba(31,122,77,.3)}
+.sch-bonded{background:rgba(255,154,118,.16);color:#b3541f;border:1px solid rgba(255,154,118,.4)}
+.sch-award{display:inline-block;margin-left:6px;font-size:10px;font-weight:600;color:var(--ink-soft);
+  background:rgba(255,255,255,.5);border:1px solid var(--glass-line);padding:2px 9px;border-radius:100px;vertical-align:middle}
+.sch-reqs{margin-top:11px;background:rgba(255,255,255,.4);border:1px solid var(--glass-line);
+  border-radius:12px;padding:10px 14px}
+.sch-reqs-label{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);
+  font-weight:600;margin-bottom:6px}
+.sch-reqs ul{margin:0;padding-left:18px}
+.sch-reqs li{font-size:12.5px;color:var(--ink-soft);line-height:1.5;margin-bottom:3px}
+.sch-award.pay-paid{color:#1f7a4d;border-color:rgba(31,122,77,.35);background:rgba(31,122,77,.1)}
+
 @media(max-width:640px){
   .top-nav{order:5}
   .mod-head h3{font-size:15px}
@@ -395,6 +411,8 @@ header{
 
 /* resume folded into the profile page (university only) */
 .profile-divider{height:1px;background:var(--glass-line);margin:34px auto 6px;max-width:940px}
+/* lets the record variant order Education before Experience without duplicating markup */
+.exp-edu-wrap{display:flex;flex-direction:column}
 .resume-section-head{max-width:940px;margin:0 auto 14px}
 /* high-school 'record' variant: editor only, single column, no document preview */
 .resume-grid.single{grid-template-columns:1fr;max-width:720px;margin:0 auto}
@@ -500,6 +518,14 @@ header{
   border:1px solid rgba(168,107,255,.35);padding:5px 12px;border-radius:100px}
 .target-link:hover{background:rgba(168,107,255,.1)}
 .target-source{font-size:11.5px;color:var(--ink-soft)}
+
+/* proximity grouping: Near you / Elsewhere in Malaysia / Explore abroad */
+.target-group{margin-bottom:6px}
+.target-group .phase-label{margin-left:0;margin-top:20px}
+.scope-chip{display:inline-block;margin-left:10px;font-size:10.5px;font-weight:600;color:#6b4da8;
+  background:rgba(168,107,255,.14);border:1px solid rgba(168,107,255,.35);padding:2px 9px;
+  border-radius:100px;vertical-align:middle}
+.scope-chip.intl{color:#b3541f;background:rgba(255,154,118,.16);border-color:rgba(255,154,118,.4)}
 
 /* AI "why this fits you" explanation layer (optional - only when a Gemini key is set) */
 .explain-btn{font-size:12.5px;font-weight:600;color:#6b4da8;cursor:pointer;

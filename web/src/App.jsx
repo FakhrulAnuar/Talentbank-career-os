@@ -8,6 +8,8 @@ import VaultPage from './components/VaultPage.jsx';
 import TargetsPage from './components/TargetsPage.jsx';
 import ProfilePage from './components/ProfilePage.jsx';
 import WorkshopsPage from './components/WorkshopsPage.jsx';
+import ScholarshipsPage from './components/ScholarshipsPage.jsx';
+import InternshipsPage from './components/InternshipsPage.jsx';
 import ChatPanel from './components/ChatPanel.jsx';
 
 export default function App() {
@@ -95,6 +97,8 @@ export default function App() {
         )}
         {view === 'modules' && <ModulesPage user={authUser} onScoreChanged={loadJourney} />}
         {view === 'workshops' && <WorkshopsPage user={authUser} onNavigate={setView} />}
+        {view === 'scholarships' && <ScholarshipsPage onNavigate={setView} />}
+        {view === 'internships' && <InternshipsPage onNavigate={setView} />}
         {view === 'vault' && <VaultPage onScoreChanged={loadJourney} />}
         {view === 'targets' && <TargetsPage onNavigate={setView} />}
         {view === 'profile' && <ProfilePage user={authUser} onSaved={loadJourney} />}

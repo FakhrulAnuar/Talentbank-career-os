@@ -1,0 +1,371 @@
+{
+  "_meta": {
+    "purpose": "Curated real Malaysian scholarships for school leavers (SPM / pre-university). Upserted into the `scholarships` table on boot (edit + restart to refresh). Matched to the student's profile by field/stage tags, and state-foundation scholarships surface for students from that state. We NEVER decide whether a student qualifies - we suggest relevance and show an eligibility SUMMARY only.",
+    "honesty": "Requirements are summaries, not the full official criteria. Deadlines and terms change every year. Every entry carries lastVerified and the UI shows 'check the full criteria on the official site'. This is guidance, not official advice.",
+    "types": "merit = based on results/achievement; need = based on financial need; bonded = requires a work/service commitment after graduation.",
+    "fields": "key,name,provider,type,award(full|partial),stage,field,benefit,requirements[],deadline,scope(national|state),state,url,tags[],alwaysShow,lastVerified",
+    "lastReviewed": "2026-07"
+  },
+  "scholarships": [
+    {
+      "key": "sch_yayasan_khazanah",
+      "name": "Yayasan Khazanah Scholarship",
+      "provider": "Yayasan Khazanah",
+      "type": "merit", "award": "full",
+      "stage": "Pre-U / undergraduate",
+      "field": "All fields",
+      "benefit": "Tuition, living allowance and development programmes at top local and overseas universities.",
+      "requirements": [
+        "Malaysian citizen with outstanding academic results",
+        "Strong leadership and co-curricular record",
+        "Admission (or a strong offer) to a top-ranked university",
+        "Pass interviews and assessment centre"
+      ],
+      "deadline": "Applications usually open early in the year",
+      "scope": "national", "state": null,
+      "url": "https://www.yayasankhazanah.com.my",
+      "tags": ["all", "merit", "leadership", "overseas", "business", "engineering", "computer science"],
+      "alwaysShow": 1, "lastVerified": "2026-07"
+    },
+    {
+      "key": "sch_jpa",
+      "name": "JPA Scholarship (Program Penajaan)",
+      "provider": "Public Service Department (JPA)",
+      "type": "bonded", "award": "full",
+      "stage": "SPM leavers",
+      "field": "All fields",
+      "benefit": "Government sponsorship for pre-university and degree studies, local or overseas.",
+      "requirements": [
+        "Malaysian citizen, top SPM results",
+        "Meets the programme's subject requirements",
+        "Bond: serve a period with the government or an approved employer after graduation",
+        "Pass interviews"
+      ],
+      "deadline": "Opens after SPM results are released",
+      "scope": "national", "state": null,
+      "url": "https://www.jpa.gov.my",
+      "tags": ["all", "spm", "bonded", "overseas", "merit"],
+      "alwaysShow": 1, "lastVerified": "2026-07"
+    },
+    {
+      "key": "sch_bnm_kijang_emas",
+      "name": "Bank Negara Kijang Emas Scholarship",
+      "provider": "Bank Negara Malaysia",
+      "type": "merit", "award": "full",
+      "stage": "SPM leavers",
+      "field": "Economics, Finance, Law, STEM",
+      "benefit": "Full sponsorship for A-Levels/IB and a degree at a leading overseas university.",
+      "requirements": [
+        "Outstanding SPM results (top achievers)",
+        "Strong communication and leadership",
+        "Interested in economics, finance, law or related fields",
+        "Pass interviews and assessment"
+      ],
+      "deadline": "Opens after SPM results",
+      "scope": "national", "state": null,
+      "url": "https://www.bnm.gov.my/scholarship",
+      "tags": ["economics", "finance", "business", "law", "merit", "overseas", "spm", "data"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "sch_petronas_pesp",
+      "name": "Petronas Education Sponsorship Programme (PESP)",
+      "provider": "Petronas",
+      "type": "bonded", "award": "full",
+      "stage": "SPM leavers",
+      "field": "Engineering & Technology",
+      "benefit": "Full sponsorship for foundation and degree, mainly in engineering, geoscience and technical fields.",
+      "requirements": [
+        "Excellent SPM results in science subjects",
+        "Interest in engineering, geoscience or technical fields",
+        "Bond: serve with Petronas after graduation",
+        "Pass assessment and interview"
+      ],
+      "deadline": "Opens after SPM results",
+      "scope": "national", "state": null,
+      "url": "https://www.petronas.com/careers/students-graduates",
+      "tags": ["engineering", "electronics", "technology", "science", "bonded", "spm", "semiconductor"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "sch_shell",
+      "name": "Shell Malaysia Scholarship",
+      "provider": "Shell Malaysia",
+      "type": "bonded", "award": "full",
+      "stage": "SPM / Pre-U",
+      "field": "Engineering & Geoscience",
+      "benefit": "Sponsorship for degree studies in engineering and related disciplines, with internships.",
+      "requirements": [
+        "Strong results in maths and science",
+        "Pursuing engineering, geoscience or a related field",
+        "May include a service commitment with Shell",
+        "Pass selection process"
+      ],
+      "deadline": "Check the official site for the current intake",
+      "scope": "national", "state": null,
+      "url": "https://www.shell.com.my/careers",
+      "tags": ["engineering", "science", "technology", "electronics", "bonded"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "sch_yayasan_uem",
+      "name": "Yayasan UEM Scholarship",
+      "provider": "Yayasan UEM",
+      "type": "merit", "award": "full",
+      "stage": "Pre-U / undergraduate",
+      "field": "Engineering & Built Environment",
+      "benefit": "Sponsorship for local degree studies, focused on engineering and the built environment.",
+      "requirements": [
+        "Good academic results",
+        "Malaysian citizen with financial need considered",
+        "Studying at a local university",
+        "Pass interview"
+      ],
+      "deadline": "Usually mid-year",
+      "scope": "national", "state": null,
+      "url": "https://www.yayasanuem.com",
+      "tags": ["engineering", "built environment", "technology", "merit"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "sch_sime_darby",
+      "name": "Yayasan Sime Darby Scholarship",
+      "provider": "Yayasan Sime Darby",
+      "type": "merit", "award": "full",
+      "stage": "Pre-U / undergraduate",
+      "field": "Multiple fields",
+      "benefit": "Sponsorship across sustainability, engineering, business and the arts at local and overseas universities.",
+      "requirements": [
+        "Strong academic and co-curricular record",
+        "Malaysian citizen",
+        "Offer from an approved university and course",
+        "Pass interviews"
+      ],
+      "deadline": "Opens around the start of the year",
+      "scope": "national", "state": null,
+      "url": "https://www.yayasansimedarby.com",
+      "tags": ["all", "business", "engineering", "sustainability", "arts", "merit", "overseas"],
+      "alwaysShow": 1, "lastVerified": "2026-07"
+    },
+    {
+      "key": "sch_maybank",
+      "name": "Maybank Scholarship",
+      "provider": "Maybank Foundation",
+      "type": "merit", "award": "full",
+      "stage": "Pre-U / undergraduate",
+      "field": "Business, Finance, Technology",
+      "benefit": "Sponsorship for degree studies with internship and career opportunities at Maybank.",
+      "requirements": [
+        "Excellent academic results",
+        "Interest in banking, finance, business or technology",
+        "Malaysian citizen",
+        "Pass selection"
+      ],
+      "deadline": "Check the official site",
+      "scope": "national", "state": null,
+      "url": "https://www.maybank.com/en/careers.page",
+      "tags": ["business", "finance", "data", "technology", "merit"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "sch_public_bank",
+      "name": "Public Bank Scholarship",
+      "provider": "Public Bank Berhad",
+      "type": "merit", "award": "partial",
+      "stage": "Pre-U / undergraduate",
+      "field": "Finance, Accounting, IT",
+      "benefit": "Support for degree studies in finance, accounting, IT and related fields.",
+      "requirements": [
+        "Strong results in relevant subjects",
+        "Malaysian citizen",
+        "Pursuing a related degree",
+        "Pass interview"
+      ],
+      "deadline": "Check the official site",
+      "scope": "national", "state": null,
+      "url": "https://www.publicbankgroup.com",
+      "tags": ["finance", "accounting", "business", "data", "computer science", "merit"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "sch_mara",
+      "name": "MARA Education Sponsorship",
+      "provider": "Majlis Amanah Rakyat (MARA)",
+      "type": "bonded", "award": "full",
+      "stage": "SPM leavers",
+      "field": "All fields",
+      "benefit": "Sponsorship and loans for Bumiputera students, local and overseas.",
+      "requirements": [
+        "Bumiputera Malaysian citizen",
+        "Good SPM results",
+        "Meets the programme requirements",
+        "Some awards convert to a loan or carry conditions"
+      ],
+      "deadline": "Opens after SPM results",
+      "scope": "national", "state": null,
+      "url": "https://www.mara.gov.my",
+      "tags": ["all", "spm", "bonded", "bumiputera", "overseas"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "sch_asean_singapore",
+      "name": "ASEAN Scholarship (Singapore)",
+      "provider": "Ministry of Education, Singapore",
+      "type": "merit", "award": "full",
+      "stage": "SPM / pre-university",
+      "field": "All fields",
+      "benefit": "Sponsorship to study pre-university (and beyond) at top schools in Singapore.",
+      "requirements": [
+        "Strong PT3/SPM-level results",
+        "Malaysian citizen within the eligible age range",
+        "Pass selection tests and interview",
+        "A service or bond condition may apply"
+      ],
+      "deadline": "Applications typically open mid-year",
+      "scope": "national", "state": null,
+      "url": "https://www.moe.gov.sg/financial-matters/awards-scholarships/asean-scholarships",
+      "tags": ["all", "overseas", "merit", "spm"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "sch_yayasan_selangor",
+      "name": "Yayasan Selangor Education Assistance",
+      "provider": "Yayasan Selangor",
+      "type": "need", "award": "partial",
+      "stage": "SPM / Pre-U / undergraduate",
+      "field": "All fields",
+      "benefit": "Education aid and scholarships for Selangor students, with financial need considered.",
+      "requirements": [
+        "Selangor-born or resident student",
+        "Meets academic and household-income criteria",
+        "Malaysian citizen",
+        "Apply through Yayasan Selangor"
+      ],
+      "deadline": "Check the official site for the current cycle",
+      "scope": "state", "state": "Selangor",
+      "url": "https://www.yayasanselangor.org.my",
+      "tags": ["all", "need", "state"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "sch_yayasan_sarawak",
+      "name": "Yayasan Sarawak Scholarship",
+      "provider": "Yayasan Sarawak",
+      "type": "merit", "award": "partial",
+      "stage": "SPM / Pre-U / undergraduate",
+      "field": "All fields",
+      "benefit": "Scholarships and study loans for Sarawakian students at all levels.",
+      "requirements": [
+        "Sarawakian student",
+        "Good academic results",
+        "Malaysian citizen",
+        "Apply through Yayasan Sarawak"
+      ],
+      "deadline": "Check the official site",
+      "scope": "state", "state": "Sarawak",
+      "url": "https://www.yayasansarawak.org.my",
+      "tags": ["all", "merit", "state"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "sch_yayasan_pahang",
+      "name": "Yayasan Pahang Education Assistance",
+      "provider": "Yayasan Pahang",
+      "type": "need", "award": "partial",
+      "stage": "SPM / Pre-U / undergraduate",
+      "field": "All fields",
+      "benefit": "Education aid for Pahang students, with need and results considered.",
+      "requirements": [
+        "Pahang-born or resident student",
+        "Meets academic and income criteria",
+        "Malaysian citizen",
+        "Apply through Yayasan Pahang"
+      ],
+      "deadline": "Check the official site",
+      "scope": "state", "state": "Pahang",
+      "url": "https://www.yayasanpahang.gov.my",
+      "tags": ["all", "need", "state"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "sch_yayasan_johor",
+      "name": "Yayasan Johor Corporation Scholarship",
+      "provider": "Yayasan Johor Corporation",
+      "type": "merit", "award": "partial",
+      "stage": "Pre-U / undergraduate",
+      "field": "All fields",
+      "benefit": "Scholarships and study aid for Johor students at local universities.",
+      "requirements": [
+        "Johor-born or resident student",
+        "Good academic results",
+        "Malaysian citizen",
+        "Apply through Yayasan Johor"
+      ],
+      "deadline": "Check the official site",
+      "scope": "state", "state": "Johor",
+      "url": "https://www.yayasanjohor.com",
+      "tags": ["all", "merit", "state"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "sch_yayasan_penang",
+      "name": "Penang Future Foundation",
+      "provider": "Penang State Government",
+      "type": "merit", "award": "full",
+      "stage": "Pre-U / undergraduate",
+      "field": "All fields",
+      "benefit": "Scholarship for high-achieving students to study at selected local universities.",
+      "requirements": [
+        "Penang-born or resident, or studying in Penang",
+        "Strong academic results",
+        "Household income within the set limit",
+        "Bond: work in Penang for a period after graduation"
+      ],
+      "deadline": "Usually opens mid-year",
+      "scope": "state", "state": "Pulau Pinang",
+      "url": "https://penangfuturefoundation.penang.gov.my",
+      "tags": ["all", "merit", "state", "bonded"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "sch_great_eastern",
+      "name": "Great Eastern Life Scholarship",
+      "provider": "Great Eastern Life",
+      "type": "merit", "award": "partial",
+      "stage": "Pre-U / undergraduate",
+      "field": "Actuarial, Finance, IT",
+      "benefit": "Support for students in actuarial science, finance, IT and related fields.",
+      "requirements": [
+        "Strong results in maths and relevant subjects",
+        "Pursuing an actuarial, finance or IT degree",
+        "Malaysian citizen",
+        "Pass selection"
+      ],
+      "deadline": "Check the official site",
+      "scope": "national", "state": null,
+      "url": "https://www.greateasternlife.com/my",
+      "tags": ["finance", "data", "actuarial", "computer science", "business", "merit"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "sch_ptptn",
+      "name": "PTPTN Study Loan",
+      "provider": "PTPTN",
+      "type": "need", "award": "partial",
+      "stage": "Undergraduate",
+      "field": "All fields",
+      "benefit": "Low-interest study loan for tuition and living costs at approved institutions (a loan, not a grant).",
+      "requirements": [
+        "Malaysian citizen enrolled at an approved institution",
+        "Course is PTPTN-approved",
+        "Open a linked savings account",
+        "Repayment required after graduation"
+      ],
+      "deadline": "Apply after enrolment (rolling)",
+      "scope": "national", "state": null,
+      "url": "https://www.ptptn.gov.my",
+      "tags": ["all", "loan", "need"],
+      "alwaysShow": 1, "lastVerified": "2026-07"
+    }
+  ]
+}

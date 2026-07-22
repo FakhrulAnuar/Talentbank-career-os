@@ -21,12 +21,14 @@ export function ensureTargets() {
       key: t.key, type: t.type, name: t.name, field: t.field, location: t.location ?? null,
       blurb: t.blurb ?? null, tags: JSON.stringify(t.tags ?? []),
       sourceUrl: t.sourceUrl ?? null, lastVerified: t.lastVerified ?? null,
+      scope: t.scope ?? 'local', state: t.state ?? null,
     };
     db.insert(targets).values(row).onConflictDoUpdate({
       target: targets.key,
       set: {
         type: row.type, name: row.name, field: row.field, location: row.location,
         blurb: row.blurb, tags: row.tags, sourceUrl: row.sourceUrl, lastVerified: row.lastVerified,
+        scope: row.scope, state: row.state,
       },
     }).run();
   }
@@ -37,5 +39,6 @@ export function listTargets(type) {
   return db.select().from(targets).where(eq(targets.type, type)).all().map((t) => ({
     key: t.key, name: t.name, field: t.field, location: t.location, blurb: t.blurb,
     tags: t.tags ? JSON.parse(t.tags) : [], sourceUrl: t.sourceUrl, lastVerified: t.lastVerified,
+    scope: t.scope || 'local', state: t.state || null,
   }));
 }

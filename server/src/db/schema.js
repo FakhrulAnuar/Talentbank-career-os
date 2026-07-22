@@ -110,6 +110,7 @@ export const profiles = sqliteTable('profiles', {
   bio: text('bio'),
   location: text('location'),
   yearLevel: text('year_level'), // uni: year1..final/postgrad; HS: form4/form5/preu
+  state: text('state'), // Malaysian state - powers "universities near you"
   updatedAt: integer('updated_at').notNull(),
 });
 
@@ -125,6 +126,8 @@ export const targets = sqliteTable('targets', {
   tags: text('tags'), // JSON array of lowercase tags
   sourceUrl: text('source_url'),
   lastVerified: text('last_verified'),
+  scope: text('scope'), // 'local' (Malaysia) | 'international'
+  state: text('state'), // Malaysian state for local targets (drives "near you" ranking)
 });
 
 // Workshops / tournaments / competitions / career-fairs catalog (curated real entries).
@@ -168,6 +171,73 @@ export const recExplanations = sqliteTable('rec_explanations', {
   userId: integer('user_id').notNull().references(() => users.id),
   targetKey: text('target_key').notNull(),
   inputHash: text('input_hash').notNull(), // sha256 of the anonymized signal payload
+  text: text('text').notNull(),
+  createdAt: integer('created_at').notNull(),
+});
+
+// Scholarship catalog (curated real Malaysian scholarships). Profile-aware like events; also
+// state-aware (state-foundation scholarships surface for students from that state). Upserted
+// from scholarships.seed.json on boot. High-school facing.
+export const scholarships = sqliteTable('scholarships', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  key: text('key').notNull().unique(),
+  name: text('name').notNull(),
+  provider: text('provider'),
+  type: text('type'),          // 'merit' | 'need' | 'bonded'
+  award: text('award'),        // 'full' | 'partial'
+  stage: text('stage'),        // e.g. 'SPM leavers', 'Pre-U / Form 6'
+  field: text('field'),
+  benefit: text('benefit'),    // what it covers
+  requirements: text('requirements'), // JSON array of eligibility-summary bullets
+  deadline: text('deadline'),
+  scope: text('scope'),        // 'national' | 'state'
+  state: text('state'),        // Malaysian state for state-foundation scholarships
+  url: text('url'),
+  tags: text('tags'),          // JSON array of lowercase field/stage tags
+  alwaysShow: integer('always_show').notNull().default(0), // open-to-all pinned
+  lastVerified: text('last_verified'),
+});
+
+// Cached AI "how to apply" guides per scholarship. Keyed by user + scholarship + input hash,
+// so Gemini is called once per unique (student stage/field, scholarship) signal-set.
+export const scholarshipGuides = sqliteTable('scholarship_guides', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id),
+  scholarshipKey: text('scholarship_key').notNull(),
+  inputHash: text('input_hash').notNull(),
+  text: text('text').notNull(),
+  createdAt: integer('created_at').notNull(),
+});
+
+// Internship catalog (curated real Malaysian internship programmes). University-facing counterpart
+// to scholarships: profile-aware (field tags) and state-aware ("near you" by physical location).
+// Deadline/duration/paid-led, actionable-now. Upserted from internships.seed.json on boot.
+export const internships = sqliteTable('internships', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  key: text('key').notNull().unique(),
+  company: text('company').notNull(),
+  role: text('role'),
+  field: text('field'),
+  location: text('location'),
+  state: text('state'),        // Malaysian state (drives "near you")
+  mode: text('mode'),          // 'on-site' | 'remote' | 'hybrid'
+  duration: text('duration'),  // e.g. '3 to 6 months'
+  paid: text('paid'),          // 'paid' | 'allowance' | 'unpaid'
+  blurb: text('blurb'),
+  requirements: text('requirements'), // JSON array of who-it's-for bullets
+  deadline: text('deadline'),
+  url: text('url'),
+  tags: text('tags'),          // JSON array of lowercase field tags
+  alwaysShow: integer('always_show').notNull().default(0), // open-to-all schemes pinned
+  lastVerified: text('last_verified'),
+});
+
+// Cached AI "how to apply / prep" guides per internship. Keyed by user + internship + input hash.
+export const internshipGuides = sqliteTable('internship_guides', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id),
+  internshipKey: text('internship_key').notNull(),
+  inputHash: text('input_hash').notNull(),
   text: text('text').notNull(),
   createdAt: integer('created_at').notNull(),
 });

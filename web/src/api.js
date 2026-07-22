@@ -66,3 +66,11 @@ export const fetchCourseGuidance = () =>
 export const chatStatus = () => request('/api/chat/status');
 export const sendChat = (messages) =>
   request('/api/chat', { method: 'POST', body: JSON.stringify({ messages }) });
+
+export const fetchScholarships = () => request('/api/scholarships');
+export const scholarshipApplyGuide = (key) =>
+  request(`/api/scholarships/${encodeURIComponent(key)}/apply-guide`, { method: 'POST' });
+
+export const fetchInternships = () => request('/api/internships');
+export const internshipApplyGuide = (key) =>
+  request(`/api/internships/${encodeURIComponent(key)}/apply-guide`, { method: 'POST' });

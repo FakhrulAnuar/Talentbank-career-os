@@ -3,6 +3,7 @@ import { fetchResume, saveResume } from '../api.js';
 
 const emptyExp = () => ({ title: '', org: '', location: '', start: '', end: '', bullets: [''] });
 const emptyEdu = () => ({ degree: '', school: '', location: '', graduated: '' });
+const emptyRef = () => ({ name: '', role: '', contact: '', note: '' });
 
 // Resume/record editor + live single-column preview. Embedded inside ProfilePage for BOTH
 // paths, self-loading via /api/resume. The `variant` switches the labels: 'resume' (university,
@@ -14,6 +15,7 @@ const LABELS = {
     sub: 'ATS-friendly and single-column. Skills and certifications come from your ASCEND activity - edit anything, then export to PDF.',
     loading: 'Building your resume…',
     save: 'Save resume',
+    headerLegend: 'Header',
     headlinePh: 'Headline (e.g. Aspiring Data Analyst | Python | SQL)',
     summaryLegend: 'Professional summary',
     summaryPh: "2-4 sentences about who you are and what you're aiming for.",
@@ -25,12 +27,19 @@ const LABELS = {
     addExp: '+ Add role',
     delExp: 'Remove role',
     expHead: 'Work Experience',
+    refLegend: 'References & recommendations',
+    refHead: 'References',
+    refNamePh: 'Referee name',
+    refRolePh: 'Title / relationship (e.g. Lecturer, Manager)',
+    refNotePh: 'Recommendation, or "Available on request"',
+    addRef: '+ Add reference',
   },
   record: {
     head: 'Your experience & achievements.',
     sub: 'A place to keep your activities, awards and references for the future. Add anything useful about yourself and save it - skills and certificates fill in from your ASCEND activity.',
     loading: 'Loading your record…',
     save: 'Save record',
+    headerLegend: 'About You',
     headlinePh: 'Headline (e.g. Aspiring Engineer | Robotics Club member)',
     summaryLegend: 'About you',
     summaryPh: '2-4 sentences about you, your interests and your goals.',
@@ -42,6 +51,12 @@ const LABELS = {
     addExp: '+ Add experience',
     delExp: 'Remove',
     expHead: 'Experience',
+    refLegend: 'Testimonies from teachers',
+    refHead: 'Testimonies',
+    refNamePh: "Teacher's name",
+    refRolePh: 'Role (e.g. Class teacher, Science teacher)',
+    refNotePh: "What they'd say about you, or 'Available on request'",
+    addRef: '+ Add testimony',
   },
 };
 
@@ -91,6 +106,12 @@ export default function ResumeSection({ variant = 'resume' }) {
   const addEdu = () => set({ education: [...resume.education, emptyEdu()] });
   const delEdu = (i) => set({ education: resume.education.filter((_, j) => j !== i) });
 
+  // --- references / testimonies helpers ---
+  const refs = resume.references || [];
+  const updRef = (i, patch) => set({ references: refs.map((r, j) => (j === i ? { ...r, ...patch } : r)) });
+  const addRef = () => set({ references: [...refs, emptyRef()] });
+  const delRef = (i) => set({ references: refs.filter((_, j) => j !== i) });
+
   const linesToArr = (v) => v.split('\n').map((s) => s.trim()).filter(Boolean);
   const contact = [resume.location, resume.email, resume.phone, resume.links].filter(Boolean).join('  |  ');
 
@@ -113,7 +134,7 @@ export default function ResumeSection({ variant = 'resume' }) {
         {/* ---------- EDITOR ---------- */}
         <div className="resume-editor no-print">
           <fieldset>
-            <legend>Header</legend>
+            <legend>{L.headerLegend}</legend>
             <input placeholder="Full name" value={resume.fullName} onChange={(e) => set({ fullName: e.target.value })} />
             <input placeholder={L.headlinePh} value={resume.headline} onChange={(e) => set({ headline: e.target.value })} />
             <div className="row2">
@@ -122,15 +143,22 @@ export default function ResumeSection({ variant = 'resume' }) {
             </div>
             <input placeholder="Email" value={resume.email} onChange={(e) => set({ email: e.target.value })} />
             <input placeholder="Links (e.g. linkedin.com/in/you)" value={resume.links} onChange={(e) => set({ links: e.target.value })} />
+            {isRecord && (
+              <textarea rows={4} placeholder={L.summaryPh}
+                value={resume.summary} onChange={(e) => set({ summary: e.target.value })} />
+            )}
           </fieldset>
 
+          {!isRecord && (
           <fieldset>
             <legend>{L.summaryLegend}</legend>
             <textarea rows={4} placeholder={L.summaryPh}
               value={resume.summary} onChange={(e) => set({ summary: e.target.value })} />
           </fieldset>
+          )}
 
-          <fieldset>
+          <div className="exp-edu-wrap">
+          <fieldset style={{ order: isRecord ? 2 : 1 }}>
             <legend>{L.expLegend}</legend>
             {resume.experience.map((e, i) => (
               <div className="sub-entry" key={i}>
@@ -158,7 +186,7 @@ export default function ResumeSection({ variant = 'resume' }) {
             <button className="mini-add" onClick={addExp}>{L.addExp}</button>
           </fieldset>
 
-          <fieldset>
+          <fieldset style={{ order: isRecord ? 1 : 2 }}>
             <legend>Education</legend>
             {resume.education.map((e, i) => (
               <div className="sub-entry" key={i}>
@@ -175,10 +203,11 @@ export default function ResumeSection({ variant = 'resume' }) {
             ))}
             <button className="mini-add" onClick={addEdu}>+ Add education</button>
           </fieldset>
+          </div>
 
           <fieldset>
             <legend>Skills <button className="pull-btn" onClick={() => set({ skills: suggestions.skills })}>Pull from ASCEND</button></legend>
-            <textarea rows={4} placeholder="One skill per line" value={resume.skills.join('\n')}
+            <textarea rows={4} placeholder="Type one skill per line - add your own, or pull from ASCEND" value={resume.skills.join('\n')}
               onChange={(e) => set({ skills: linesToArr(e.target.value) })} />
           </fieldset>
 
@@ -186,6 +215,22 @@ export default function ResumeSection({ variant = 'resume' }) {
             <legend>Certifications <button className="pull-btn" onClick={() => set({ certifications: suggestions.certifications })}>Pull from ASCEND</button></legend>
             <textarea rows={4} placeholder="One certification per line" value={resume.certifications.join('\n')}
               onChange={(e) => set({ certifications: linesToArr(e.target.value) })} />
+          </fieldset>
+
+          <fieldset>
+            <legend>{L.refLegend}</legend>
+            {refs.map((r, i) => (
+              <div className="sub-entry" key={i}>
+                <div className="row2">
+                  <input placeholder={L.refNamePh} value={r.name} onChange={(ev) => updRef(i, { name: ev.target.value })} />
+                  <input placeholder={L.refRolePh} value={r.role} onChange={(ev) => updRef(i, { role: ev.target.value })} />
+                </div>
+                <input placeholder="Email or phone (optional)" value={r.contact} onChange={(ev) => updRef(i, { contact: ev.target.value })} />
+                <textarea rows={2} placeholder={L.refNotePh} value={r.note} onChange={(ev) => updRef(i, { note: ev.target.value })} />
+                <div className="entry-actions"><button className="mini-del-entry" onClick={() => delRef(i)}>Remove</button></div>
+              </div>
+            ))}
+            <button className="mini-add" onClick={addRef}>{L.addRef}</button>
           </fieldset>
         </div>
 
@@ -248,6 +293,19 @@ export default function ResumeSection({ variant = 'resume' }) {
               <section>
                 <h2 className="rd-h">Certifications</h2>
                 <ul>{resume.certifications.map((s, i) => <li key={i}>{s}</li>)}</ul>
+              </section>
+            )}
+
+            {(resume.references || []).some((r) => r.name || r.note) && (
+              <section>
+                <h2 className="rd-h">{L.refHead}</h2>
+                {(resume.references || []).filter((r) => r.name || r.note).map((r, i) => (
+                  <div className="rd-entry" key={i}>
+                    <div className="rd-entry-top"><b>{r.name}</b><span>{r.contact}</span></div>
+                    <div className="rd-entry-sub">{r.role}</div>
+                    {r.note && <p className="rd-summary">{r.note}</p>}
+                  </div>
+                ))}
               </section>
             )}
           </div>

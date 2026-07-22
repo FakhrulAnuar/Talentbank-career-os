@@ -1,0 +1,191 @@
+{
+  "_meta": {
+    "purpose": "Curated real Malaysian internship programmes for university students. Upserted into the `internships` table on boot (edit + restart to refresh). Actionable-now opportunities (deadline, duration, paid or not), distinct from the aspirational company Targets. Matched to the student's field, and surfaced by state ('near you'). We show a 'who it's for' SUMMARY only and never decide whether a student qualifies.",
+    "honesty": "Requirements are summaries, not full official criteria. Intakes, stipends and deadlines change every year. Every entry carries lastVerified and the UI shows 'apply on the official site'. This is guidance, not official advice.",
+    "paid": "paid = a salary/stipend; allowance = a smaller monthly allowance; unpaid = no pay (verify on the site).",
+    "fields": "key,company,role,field,location,state,mode(on-site|remote|hybrid),duration,paid(paid|allowance|unpaid),blurb,requirements[],deadline,url,tags[],alwaysShow,lastVerified",
+    "lastReviewed": "2026-07"
+  },
+  "internships": [
+    {
+      "key": "int_petronas",
+      "company": "Petronas", "role": "Student Internship Programme",
+      "field": "Engineering & Technology", "location": "Kuala Lumpur / nationwide", "state": "Kuala Lumpur",
+      "mode": "on-site", "duration": "3 to 6 months", "paid": "allowance",
+      "blurb": "Structured internships across engineering, geoscience, IT and business functions.",
+      "requirements": ["Penultimate or final-year undergraduate", "Relevant field of study", "Good academic standing", "Apply via the Petronas careers portal"],
+      "deadline": "Rolling intakes, check the portal",
+      "url": "https://www.petronas.com/careers/students-graduates",
+      "tags": ["engineering", "technology", "electronics", "data", "semiconductor", "business"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "int_intel",
+      "company": "Intel Malaysia", "role": "Engineering / Technical Internship",
+      "field": "Semiconductors & Engineering", "location": "Bayan Lepas, Pulau Pinang", "state": "Pulau Pinang",
+      "mode": "on-site", "duration": "3 to 6 months", "paid": "paid",
+      "blurb": "Hands-on internships in chip design, manufacturing, and hardware/software engineering.",
+      "requirements": ["Penultimate-year student", "Engineering, CS or related field", "Strong technical fundamentals", "Apply via Intel careers"],
+      "deadline": "Rolling intakes",
+      "url": "https://www.intel.com/content/www/us/en/jobs/locations/malaysia.html",
+      "tags": ["semiconductor", "engineering", "electronics", "coding", "software", "data", "fabrication"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "int_infineon",
+      "company": "Infineon Technologies", "role": "Internship (Engineering / Operations)",
+      "field": "Semiconductors", "location": "Melaka / Kulim, Kedah", "state": "Melaka",
+      "mode": "on-site", "duration": "3 to 6 months", "paid": "allowance",
+      "blurb": "Internships in semiconductor manufacturing, quality and engineering.",
+      "requirements": ["Undergraduate in engineering or a technical field", "Available for a full internship block", "Apply via Infineon careers"],
+      "deadline": "Rolling intakes",
+      "url": "https://www.infineon.com/cms/en/careers/",
+      "tags": ["semiconductor", "engineering", "electronics", "fabrication"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "int_dell",
+      "company": "Dell Technologies", "role": "Internship (Tech / Business)",
+      "field": "Technology", "location": "Cyberjaya, Selangor / Pulau Pinang", "state": "Selangor",
+      "mode": "hybrid", "duration": "3 to 6 months", "paid": "paid",
+      "blurb": "Internships across software, IT, supply chain and business functions.",
+      "requirements": ["Penultimate-year student", "Relevant field", "Apply via Dell careers"],
+      "deadline": "Rolling intakes",
+      "url": "https://jobs.dell.com",
+      "tags": ["technology", "software", "coding", "data", "business", "computer science"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "int_shopee",
+      "company": "Shopee Malaysia", "role": "Internship (Engineering / Data / Business)",
+      "field": "Technology & E-commerce", "location": "Kuala Lumpur", "state": "Kuala Lumpur",
+      "mode": "on-site", "duration": "3 to 6 months", "paid": "paid",
+      "blurb": "Fast-paced internships in software, data analytics, product and operations.",
+      "requirements": ["Undergraduate, available full-time for the block", "Relevant field", "Apply via Shopee careers"],
+      "deadline": "Rolling intakes",
+      "url": "https://careers.shopee.com.my",
+      "tags": ["software", "data", "coding", "business", "analytics", "technology", "computer science"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "int_grab",
+      "company": "Grab", "role": "Grab Kickstart Internship",
+      "field": "Technology", "location": "Kuala Lumpur", "state": "Kuala Lumpur",
+      "mode": "hybrid", "duration": "3 to 6 months", "paid": "paid",
+      "blurb": "Internship programme across engineering, data science, product and business.",
+      "requirements": ["Penultimate or final-year student", "Relevant field", "Apply via Grab careers"],
+      "deadline": "Check the careers site for the intake",
+      "url": "https://grab.careers",
+      "tags": ["software", "data", "coding", "analytics", "business", "technology"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "int_maybank",
+      "company": "Maybank", "role": "Maybank Internship",
+      "field": "Banking, Finance & Technology", "location": "Kuala Lumpur", "state": "Kuala Lumpur",
+      "mode": "on-site", "duration": "8 to 24 weeks", "paid": "allowance",
+      "blurb": "Internships across banking, finance, analytics and technology.",
+      "requirements": ["Undergraduate in a relevant field", "Good academic standing", "Apply via Maybank careers"],
+      "deadline": "Rolling intakes",
+      "url": "https://www.maybank.com/en/careers.page",
+      "tags": ["business", "finance", "data", "analytics", "technology"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "int_accenture",
+      "company": "Accenture Malaysia", "role": "Internship (Consulting / Technology)",
+      "field": "Consulting & Technology", "location": "Kuala Lumpur", "state": "Kuala Lumpur",
+      "mode": "hybrid", "duration": "3 to 6 months", "paid": "paid",
+      "blurb": "Internships in technology consulting, software and business analysis.",
+      "requirements": ["Penultimate-year student", "Relevant field", "Strong communication", "Apply via Accenture careers"],
+      "deadline": "Rolling intakes",
+      "url": "https://www.accenture.com/my-en/careers",
+      "tags": ["consulting", "business", "technology", "data", "software", "communication"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "int_capitala",
+      "company": "Capital A (AirAsia)", "role": "Internship (Tech / Business)",
+      "field": "Aviation & Technology", "location": "Sepang, Selangor", "state": "Selangor",
+      "mode": "on-site", "duration": "3 to 6 months", "paid": "allowance",
+      "blurb": "Internships across data, digital, operations and business at the AirAsia group.",
+      "requirements": ["Undergraduate in a relevant field", "Available for the internship block", "Apply via the AirAsia careers site"],
+      "deadline": "Rolling intakes",
+      "url": "https://careers.airasia.com",
+      "tags": ["data", "technology", "business", "software", "analytics"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "int_pwc",
+      "company": "PwC Malaysia", "role": "Internship (Assurance / Tax / Consulting)",
+      "field": "Accounting & Consulting", "location": "Kuala Lumpur / regional offices", "state": "Kuala Lumpur",
+      "mode": "hybrid", "duration": "2 to 6 months", "paid": "allowance",
+      "blurb": "Internships across audit, tax, advisory and technology consulting.",
+      "requirements": ["Undergraduate in accounting, finance, business or a related field", "Good academic standing", "Apply via PwC careers"],
+      "deadline": "Rolling intakes",
+      "url": "https://www.pwc.com/my/en/careers.html",
+      "tags": ["accounting", "finance", "business", "consulting", "data"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "int_bnm",
+      "company": "Bank Negara Malaysia", "role": "Student Internship",
+      "field": "Economics, Finance & Data", "location": "Kuala Lumpur", "state": "Kuala Lumpur",
+      "mode": "on-site", "duration": "8 to 24 weeks", "paid": "allowance",
+      "blurb": "Internships in economics, financial sector policy, and data analytics.",
+      "requirements": ["Undergraduate in economics, finance, data or related", "Strong academic record", "Apply via BNM careers"],
+      "deadline": "Check the BNM careers site",
+      "url": "https://www.bnm.gov.my/careers",
+      "tags": ["economics", "finance", "data", "analytics", "business"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "int_sime_darby",
+      "company": "Sime Darby", "role": "Internship Programme",
+      "field": "Multiple fields", "location": "Selangor / nationwide", "state": "Selangor",
+      "mode": "on-site", "duration": "3 to 6 months", "paid": "allowance",
+      "blurb": "Internships across engineering, sustainability, business and technology.",
+      "requirements": ["Undergraduate in a relevant field", "Available for the block", "Apply via Sime Darby careers"],
+      "deadline": "Rolling intakes",
+      "url": "https://www.simedarby.com/careers",
+      "tags": ["engineering", "business", "sustainability", "technology", "data"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    },
+    {
+      "key": "int_mystep",
+      "company": "MySTEP (Government)", "role": "Short-Term Employment Programme",
+      "field": "All fields", "location": "Nationwide", "state": null,
+      "mode": "on-site", "duration": "Contract-based", "paid": "paid",
+      "blurb": "Government short-term placements in public-sector and GLC roles across the country.",
+      "requirements": ["Malaysian citizen", "Meets the role's requirements", "Apply via the official MySTEP portal"],
+      "deadline": "Open intakes, check the portal",
+      "url": "https://mystep.mof.gov.my",
+      "tags": ["all", "government", "business"],
+      "alwaysShow": 1, "lastVerified": "2026-07"
+    },
+    {
+      "key": "int_protege",
+      "company": "Protege Programme (TalentCorp)", "role": "Structured Internship / Ready-to-Work",
+      "field": "All fields", "location": "Nationwide", "state": null,
+      "mode": "on-site", "duration": "Varies", "paid": "allowance",
+      "blurb": "Government-backed structured internship and job-readiness programme with partner employers.",
+      "requirements": ["Malaysian undergraduate or fresh graduate", "Register on the official platform", "Matched to partner employers"],
+      "deadline": "Open, check the platform",
+      "url": "https://www.talentcorp.com.my",
+      "tags": ["all", "career", "business", "technology"],
+      "alwaysShow": 1, "lastVerified": "2026-07"
+    },
+    {
+      "key": "int_google_sg",
+      "company": "Google (Regional)", "role": "Internship (Singapore hub)",
+      "field": "Technology", "location": "Singapore", "state": null,
+      "mode": "on-site", "duration": "10 to 14 weeks", "paid": "paid",
+      "blurb": "Competitive regional internships in software engineering and related fields.",
+      "requirements": ["Strong CS or engineering student", "Solid coding and problem-solving", "Apply via Google careers"],
+      "deadline": "Applications usually open months ahead",
+      "url": "https://careers.google.com/students",
+      "tags": ["software", "coding", "data", "computer science", "technology"],
+      "alwaysShow": 0, "lastVerified": "2026-07"
+    }
+  ]
+}

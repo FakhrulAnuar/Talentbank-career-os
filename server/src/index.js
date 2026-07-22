@@ -18,6 +18,10 @@ import { profileRouter } from './routes/profile.js';
 import { ingestRouter } from './routes/ingest.js';
 import { eventsRouter } from './routes/events.js';
 import { chatRouter } from './routes/chat.js';
+import { scholarshipsRouter } from './routes/scholarships.js';
+import { ensureScholarships } from './services/scholarshipService.js';
+import { internshipsRouter } from './routes/internships.js';
+import { ensureInternships } from './services/internshipService.js';
 
 // Self-initialize: create tables + load/refresh catalogs from the seed files.
 ensureSchema();
@@ -26,6 +30,8 @@ pruneRemovedMilestones(); // remove retired steps (e.g. hs_resume) from existing
 ensureModules();
 ensureTargets();
 ensureEvents();
+ensureScholarships();
+ensureInternships();
 
 const app = express();
 app.use(cors({ origin: true, credentials: true })); // credentials for the session cookie
@@ -43,6 +49,8 @@ app.use('/api', profileRouter);
 app.use('/api', ingestRouter);
 app.use('/api', eventsRouter);
 app.use('/api', chatRouter);
+app.use('/api', scholarshipsRouter);
+app.use('/api', internshipsRouter);
 
 // Optional scheduled ingestion (step 2). Off unless INGEST_INTERVAL_MIN > 0.
 if (config.ingestIntervalMin > 0) {

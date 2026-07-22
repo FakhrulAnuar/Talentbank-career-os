@@ -18,12 +18,12 @@ do raises your **Pathway Score**, a glowing orb that climbs the path with you.
 | Feature | What it does |
 |---|---|
 | **Ascent Path** | Your roadmap as one flowing vertical timeline. Completed steps glow, your score-orb climbs, and certificates hang along the path like lanterns. |
-| **Profile** | Set a target field, interests, and your study year or school stage. This personalises your course and target matches. New sign-ups start here. Your resume (university) or experience record (high school) also lives on this page. |
+| **Profile** | Set a target field, interests, your study year or school stage, and your Malaysian state. This personalises your course and target matches. New sign-ups start here. Your resume (university) or experience record (high school) also lives on this page. |
 | **Modules** | A catalog of real online courses (Coursera, Khan Academy, LinkedIn Learning, and more). Matched to your field and your year, so a final-year student is not pushed beginner fundamentals. Open the course on its provider, then mark it done to earn points and CV tips. |
 | **Workshops & Tournaments** | Real Malaysian hackathons, competitions, workshops, and career fairs, matched to your profile. Each entry links out to the official registration page with a checked date. |
 | **Certificate Vault** | Upload your credentials (PDF, PNG, or JPG). Preview images inline and download them anytime. Each certificate adds 10 points to your Pathway Score. |
 | **Resume and Experience Record** | University students get an ATS-friendly resume with a live preview and PDF export. High-school students get a simpler experience record: a place to bank activities, awards, and references for the future. Both live inside the Profile page. |
-| **Targets** | High-schoolers get matched to universities, university students to companies. Each target is scored against your activity with clear reasons and an official apply link. |
+| **Targets** | High-schoolers get matched to universities, university students to companies. Each target is scored against your activity with clear reasons and an official apply link. Results are location-aware: Malaysian universities in your own state show under "Near you", the rest under "Elsewhere in Malaysia", and international schools under "Explore abroad". Fit still comes first, so a strong match abroad is never buried. |
 | **ASCEND Assistant** | An optional AI helper (see Optional AI features below) that answers questions about your own journey in English or Bahasa Melayu. |
 
 The **Pathway Score** is simply the sum of completed milestone points, completed module points,
@@ -74,7 +74,8 @@ Now open http://localhost:5173 in your browser.
 
 ### 3. Log in
 
-- Try the demo account: `demo_hs@ascend.local` for highschool students, `demo_u@ascend.local` for university students with password `demo1234`
+<<<<<<< HEAD
+- Try the demo account: demo_hs@ascend.local for highschool students, demo_u@ascend.local for university students with password demo1234
 - Or create your own: click Create an account, choose High School or University, and you will
   start on the Profile page.
 
@@ -152,7 +153,7 @@ the project root:
 
 - `milestones.seed.json` for the steps on the path
 - `modules.seed.json` for the online courses (title, provider, real URL, level, points)
-- `targets.seed.json` for the universities and companies (with official links)
+- `targets.seed.json` for the universities and companies (with official links, a local or international scope, and a Malaysian state for local universities)
 - `events.seed.json` for the workshops, hackathons, competitions, and career fairs
 
 Edit any of these and restart the API. The changes load automatically without erasing anyone's

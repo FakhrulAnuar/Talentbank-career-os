@@ -17,6 +17,12 @@ export default function TopBar({ journey, user, view, onNavigate, onOpenVault, o
         <button className={view === 'path' ? 'nav-on' : ''} onClick={() => onNavigate('path')}>Path</button>
         <button className={view === 'modules' ? 'nav-on' : ''} onClick={() => onNavigate('modules')}>Modules</button>
         <button className={view === 'workshops' ? 'nav-on' : ''} onClick={() => onNavigate('workshops')}>Workshops</button>
+        {(user?.pathType ?? journey?.user?.pathType) !== 'university' && (
+          <button className={view === 'scholarships' ? 'nav-on' : ''} onClick={() => onNavigate('scholarships')}>Scholarships</button>
+        )}
+        {(user?.pathType ?? journey?.user?.pathType) === 'university' && (
+          <button className={view === 'internships' ? 'nav-on' : ''} onClick={() => onNavigate('internships')}>Internships</button>
+        )}
         <button className={view === 'vault' ? 'nav-on' : ''} onClick={() => onNavigate('vault')}>Vault</button>
         <button className={view === 'targets' ? 'nav-on' : ''} onClick={() => onNavigate('targets')}>Targets</button>
       </nav>

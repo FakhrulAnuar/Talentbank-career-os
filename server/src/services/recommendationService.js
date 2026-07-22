@@ -19,7 +19,16 @@ function userSignals(userId) {
   const certs = db.select({ title: certificates.title })
     .from(certificates).where(eq(certificates.userId, userId)).all().map((r) => r.title);
   const profile = getProfile(userId);
-  return { skills, certs, interests: profile.interests || [], targetField: profile.targetField || '' };
+  return { skills, certs, interests: profile.interests || [], targetField: profile.targetField || '', state: profile.state || '' };
+}
+
+// Where a target sits relative to the student. 'near' = a local university in the student's own
+// state; 'local' = elsewhere in Malaysia; 'international' = abroad. "Near" only applies to
+// universities (companies are just local vs international).
+function proximityOf(type, target, studentState) {
+  if (target.scope === 'international') return 'international';
+  if (type === 'university' && studentState && target.state && target.state === studentState) return 'near';
+  return 'local';
 }
 
 // Cached job-market demand (from the scheduled Adzuna ingestion). Empty until ingestion runs.
@@ -30,7 +39,7 @@ function demandFor(target) {
   return hit && hit.count > 0 ? hit : null;
 }
 
-function scoreTarget(target, signals, demand) {
+function scoreTarget(target, signals, demand, proximity) {
   const tagList = (target.tags || []).map((t) => t.toLowerCase());
   const reasons = [];
   const matched = new Set();
@@ -59,7 +68,14 @@ function scoreTarget(target, signals, demand) {
 
   const distinct = matched.size;
   let score = 55 + distinct * 12 + (certMatched ? 6 : 0) + (profileMatched ? 6 : 0);
-  if (demand) { score += 4; reasons.push(`High current demand - ${demand.count.toLocaleString()} live job postings (Adzuna)`); }
+  if (demand) { score += 4; reasons.push(`High current demand - ${demand.count.toLocaleString()} live job postings`); }
+
+  // Proximity nudge: keep fit primary (a tag match is worth more), but rank nearer targets
+  // higher within a similar fit, and add a location reason chip.
+  if (proximity === 'near') { score += 8; reasons.unshift(`Near you: in ${target.state}`); }
+  else if (proximity === 'local') { score += 3; }
+  else if (proximity === 'international') { reasons.push('International option to explore'); }
+
   score = Math.max(50, Math.min(99, score));
 
   const finalReasons = reasons.slice(0, 3);
@@ -75,10 +91,12 @@ export function getRecommendations(userId, pathType) {
 
   const items = list.map((t, i) => {
     const demand = type === 'company' ? demandFor(t) : null;
-    const { score, reasons } = scoreTarget(t, signals, demand);
+    const group = proximityOf(type, t, signals.state); // 'near' | 'local' | 'international'
+    const { score, reasons } = scoreTarget(t, signals, demand, group);
     return {
       id: i + 1, key: t.key, name: t.name, field: t.field, location: t.location, blurb: t.blurb,
       score, reasons, sourceUrl: t.sourceUrl, lastVerified: t.lastVerified,
+      scope: t.scope, state: t.state, group,
     };
   }).sort((a, b) => b.score - a.score || a.id - b.id);
 
@@ -96,7 +114,8 @@ export function matchForTarget(userId, pathType, key) {
   if (!target) return null;
   const signals = userSignals(userId);
   const demand = type === 'company' ? demandFor(target) : null;
-  const { score, reasons } = scoreTarget(target, signals, demand);
+  const group = proximityOf(type, target, signals.state);
+  const { score, reasons } = scoreTarget(target, signals, demand, group);
   return { target, signals, score, reasons };
 }
 
